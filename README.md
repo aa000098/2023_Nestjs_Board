@@ -32,6 +32,9 @@ npm i -g typescript
 
 # Nestjs 프로젝트 의존성 설치
 $ npm install
+
+# TypeORM 설치
+$ npm i @nestjs/typeorm
 ```
 
 ## Running the app
