@@ -6,12 +6,13 @@
 클라썸 백엔드 개발 인턴 과제를 진행하는 손현호입니다.<br>과제 설치 및 실행 방법에 대해 설명드리겠습니다.
 
 <p align="center">
-<img src="https://img.shields.io/badge/npm-10.2.4-grey?logo=npm&logoColor=white&style=flat&labelColor=darkred">
-<img src = "https://img.shields.io/badge/Nestjs-10.2.1-grey?style=flat&logo=Nestjs&labelColor=e0234e">
-<img src = "https://img.shields.io/badge/Node.js-18.19.1-grey?style=flat&logo=Node.js&logoColor=white&labelColor=339933">
-<img src = "https://img.shields.io/badge/TypeScript-5.3.3-grey?style=flat&logo=typescript&logoColor=white&labelColor=3178C6">
-
-
+<img src="https://img.shields.io/badge/npm-v10.2.4-grey?logo=npm&logoColor=white&style=flat&labelColor=darkred">
+<img src = "https://img.shields.io/badge/Nestjs-v10.2.1-grey?style=flat&logo=Nestjs&labelColor=e0234e">
+<img src = "https://img.shields.io/badge/Node.js-v18.19.1-grey?style=flat&logo=Node.js&logoColor=white&labelColor=339933">
+<br>
+<img src = "https://img.shields.io/badge/TypeScript-v5.3.3-grey?style=flat&logo=typescript&logoColor=white&labelColor=3178C6">
+<img src = "https://img.shields.io/badge/TypeORM-v10.0.2-grey?style=flat&logo=TypeORM&logoColor=white&labelColor=fe0902">
+<img src = "https://img.shields.io/badge/MySQL-v0.0.0-grey?style=flat&logo=mysql&logoColor=white&labelColor=015a85">
 </p>
 
 ## Installation
