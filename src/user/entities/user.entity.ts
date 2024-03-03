@@ -32,4 +32,4 @@ export class UserModel extends BaseModel {
 
     @Column({type: 'enum', enum: GendersEnum })
     gender: GendersEnum;
-}    
+}
