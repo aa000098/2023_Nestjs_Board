@@ -12,7 +12,7 @@
 <br>
 <img src = "https://img.shields.io/badge/TypeScript-v5.3.3-grey?style=flat&logo=typescript&logoColor=white&labelColor=3178C6">
 <img src = "https://img.shields.io/badge/TypeORM-v10.0.2-grey?style=flat&logo=TypeORM&logoColor=white&labelColor=fe0902">
-<img src = "https://img.shields.io/badge/MySQL-v0.0.0-grey?style=flat&logo=mysql&logoColor=white&labelColor=015a85">
+<img src = "https://img.shields.io/badge/MySQL-v8.0.36-grey?style=flat&logo=mysql&logoColor=white&labelColor=015a85">
 </p>
 
 ## Installation
@@ -36,6 +36,12 @@ $ npm install
 
 # TypeORM 설치
 $ npm i @nestjs/typeorm
+
+# MySQL 설치
+$ npm i mysql2
+
+# Config Module 설치
+$ npm i @nestjs/config
 ```
 
 ## Running the app
