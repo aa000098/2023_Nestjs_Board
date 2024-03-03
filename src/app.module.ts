@@ -9,6 +9,7 @@ import { ENV_DB_DATABASE_KEY, ENV_DB_HOST_KEY, ENV_DB_PASSWORD_KEY, ENV_DB_PORT_
 import { UserModule } from './user/user.module';
 import { UserModel } from './user/entities/user.entity';
 import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
+import { SpaceRoleModel } from './space/entities/space-role.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
       isGlobal: true,
     }),
     TypeOrmModule.forFeature([
-      UserModel,
+      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel
     ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -31,6 +32,7 @@ import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
         SpaceModel,
         UserModel,
         SpaceUserBridgeModel,
+        SpaceRoleModel,
       ],
       synchronize: true,
 
