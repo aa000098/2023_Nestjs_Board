@@ -12,6 +12,8 @@ import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
 import { SpaceRoleModel } from './space/entities/space-role.entity';
 import { PostModule } from './post/post.module';
 import { PostModel } from './post/entities/post.entity';
+import { ChatModule } from './chat/chat.module';
+import { ChatModel } from './chat/entities/chat.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { PostModel } from './post/entities/post.entity';
       isGlobal: true,
     }),
     TypeOrmModule.forFeature([
-      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel, PostModel,
+      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel, PostModel, ChatModel,
     ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -36,6 +38,7 @@ import { PostModel } from './post/entities/post.entity';
         SpaceUserBridgeModel,
         SpaceRoleModel,
         PostModel,
+        ChatModel,
       ],
       synchronize: true,
 
@@ -43,6 +46,7 @@ import { PostModel } from './post/entities/post.entity';
     SpaceModule,
     UserModule,
     PostModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
