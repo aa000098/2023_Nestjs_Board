@@ -1,6 +1,7 @@
 import { SpaceModel } from "src/space/entities/space.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { UserModel } from "./user.entity";
+import { SpaceRoleModel } from "src/space/entities/space-role.entity";
 
 @Entity({ name: 'space_user_bridge' })
 export class SpaceUserBridgeModel {
@@ -10,7 +11,7 @@ export class SpaceUserBridgeModel {
     @PrimaryColumn()
     userId: number;
 
-    @ManyToOne(()=> SpaceModel, (space)=> space.participatingUsers)
+    @ManyToOne(()=> SpaceModel, (space)=> space.participatingUsers, { onDelete: "CASCADE"})
     @JoinColumn({name: 'spaceId', referencedColumnName: 'id'})
     participatingSpaces: SpaceModel;
     
@@ -18,6 +19,7 @@ export class SpaceUserBridgeModel {
     @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     participatingUsers: UserModel;
 
-    @Column()
-    role: string;
+    @OneToOne(()=> SpaceRoleModel, {cascade: true, eager: true}, )
+    @JoinColumn()
+    spaceRole: SpaceRoleModel;
 } 

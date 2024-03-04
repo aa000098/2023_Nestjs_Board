@@ -9,6 +9,9 @@ import { SpaceUserBridgeModel } from './entities/space_user_bridge.entity';
   imports: [
     TypeOrmModule.forFeature([UserModel, SpaceUserBridgeModel]),
   ],
+  exports: [
+    UserService,
+  ],
   controllers: [UserController],
   providers: [UserService],
 })

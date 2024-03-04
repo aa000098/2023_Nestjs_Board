@@ -1,9 +1,10 @@
 import { BaseModel } from "src/common/entities/base.entity";
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { SpaceUserBridgeModel } from "./space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
 import { GendersEnum } from "../const/gender.const";
 import { IsEmail, IsString, MinLength } from "class-validator";
+import { Exclude } from "class-transformer";
 
 @Entity({ name: 'user' })
 export class UserModel extends BaseModel {
@@ -12,7 +13,7 @@ export class UserModel extends BaseModel {
     email: string;
 
     @Column()
-    @MinLength(6)
+    @Exclude()
     password: string;
 
     @Column()
