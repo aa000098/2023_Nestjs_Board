@@ -3,8 +3,9 @@ import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm"
 import { SpaceUserBridgeModel } from "./space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
 import { GendersEnum } from "../const/gender.const";
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 import { Exclude } from "class-transformer";
+import { PostModel } from "src/post/entities/post.entity";
 
 @Entity({ name: 'user' })
 export class UserModel extends BaseModel {
@@ -20,12 +21,6 @@ export class UserModel extends BaseModel {
     @IsString()
     userName: string;
 
-    @OneToMany(() => SpaceModel, (space)=> space.owner)
-    owningSpaces: SpaceModel[];
-
-    @OneToMany(()=> SpaceUserBridgeModel, (bridge)=> bridge.participatingUsers)
-    participatingSpaces: SpaceUserBridgeModel[];
-
     @Column({
         nullable: true,
     })
@@ -33,4 +28,13 @@ export class UserModel extends BaseModel {
 
     @Column({type: 'enum', enum: GendersEnum })
     gender: GendersEnum;
+
+    @OneToMany(() => SpaceModel, (space)=> space.owner)
+    owningSpaces: SpaceModel[];
+
+    @OneToMany(()=> SpaceUserBridgeModel, (bridge)=> bridge.participatingUsers)
+    participatingSpaces: SpaceUserBridgeModel[];
+
+    @OneToMany(()=> PostModel, (post)=> post.writer)
+    posts: PostModel[];
 }

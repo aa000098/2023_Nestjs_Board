@@ -2,8 +2,9 @@ import { IsString } from "class-validator";
 import { BaseModel } from "src/common/entities/base.entity";
 import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity";
 import { UserModel } from "src/user/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { SpaceRoleModel } from "./space-role.entity";
+import { PostModel } from "src/post/entities/post.entity";
 
 @Entity({ name: 'space' })
 export class SpaceModel extends BaseModel {
@@ -13,6 +14,11 @@ export class SpaceModel extends BaseModel {
 
     @Column()
     ownerId: number;
+    
+    @Column({
+        nullable: true,
+    })
+    spaceLogo: Buffer;
 
     @ManyToOne(()=> UserModel, (user)=> user.owningSpaces, {
         nullable:false,
@@ -26,10 +32,12 @@ export class SpaceModel extends BaseModel {
     @OneToMany(()=> SpaceRoleModel, (spaceRole)=> spaceRole.space, {
         cascade: true,
     })
-    spaceRole: SpaceRoleModel[];
+    spaceRoles: SpaceRoleModel[];
 
-    @Column({
-        nullable: true,
+    @OneToMany(()=> PostModel, (post)=> post.space, {
+        cascade: true
     })
-    spaceLogo: Buffer;
+    posts: PostModel[];
+
+
 } 

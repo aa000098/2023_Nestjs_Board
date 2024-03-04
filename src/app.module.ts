@@ -10,6 +10,8 @@ import { UserModule } from './user/user.module';
 import { UserModel } from './user/entities/user.entity';
 import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
 import { SpaceRoleModel } from './space/entities/space-role.entity';
+import { PostModule } from './post/post.module';
+import { PostModel } from './post/entities/post.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { SpaceRoleModel } from './space/entities/space-role.entity';
       isGlobal: true,
     }),
     TypeOrmModule.forFeature([
-      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel
+      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel, PostModel,
     ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -33,12 +35,14 @@ import { SpaceRoleModel } from './space/entities/space-role.entity';
         UserModel,
         SpaceUserBridgeModel,
         SpaceRoleModel,
+        PostModel,
       ],
       synchronize: true,
 
     }),
     SpaceModule,
     UserModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

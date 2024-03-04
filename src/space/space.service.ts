@@ -22,7 +22,7 @@ export class SpaceService {
 
     async getAllSpaces() {
         const spaces = await this.spaceRepository.find({
-            relations: ['owner', 'spaceRole', 'participatingUsers']
+            relations: ['owner', 'spaceRoles', 'participatingUsers']
         });
         return spaces
     }
@@ -79,16 +79,21 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['spaceRole', 'participatingUsers']
+            relations: ['spaceRoles', 'participatingUsers']
         });
+
+        if (!space) {
+            throw new Error('Space가 없습니다.');
+        }
+
         const user = await this.userService.getUserByEmail(email);
         const userId = user.id;
 
-        if (!space || !user) {
-            throw new Error('Space 또는 User가 없습니다.')
+        if (!user) {
+            throw new Error('User가 없습니다.');
         }
 
-        const spaceRoles = space.spaceRole;
+        const spaceRoles = space.spaceRoles;
         const spaceRole = spaceRoles.find((spaceRole) => {
             return spaceRole.entryCode == entryCode;
         });
@@ -107,7 +112,7 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['spaceRole', 'participatingUsers']
+            relations: ['spaceRoles', 'participatingUsers']
         });
         return updatedSpace;
     }
@@ -118,13 +123,18 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['spaceRole', 'participatingUsers']
+            relations: ['spaceRoles', 'participatingUsers']
         });
+
+        if (!space) {
+            throw new Error('Space가 없습니다.');
+        }
+
         const user = await this.userService.getUserByEmail(email);
         const userId = user.id;
 
-        if (!space || !user) {
-            throw new Error('Space 또는 User가 없습니다.')
+        if (!user) {
+            throw new Error('User가 없습니다.');
         }
 
         const deleteResult = await this.userService.deleteBridge(spaceId, userId);
@@ -142,7 +152,7 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['spaceRole', 'participatingUsers']
+            relations: ['spaceRoles', 'participatingUsers']
         });
 
         if (!space) {

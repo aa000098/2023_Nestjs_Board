@@ -9,7 +9,7 @@ export class SpaceRoleModel extends BaseModel {
     @Column()
     spaceId: number;
 
-    @ManyToOne(()=> SpaceModel, (space)=> space.spaceRole, {onDelete: "CASCADE"})
+    @ManyToOne(()=> SpaceModel, (space)=> space.spaceRoles, {onDelete: "CASCADE"})
     @JoinColumn({name: 'spaceId', referencedColumnName: 'id'})
     space: SpaceModel;
 
