@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SpaceModule } from './space/space.module';
@@ -14,12 +14,13 @@ import { PostModule } from './post/post.module';
 import { PostModel } from './post/entities/post.entity';
 import { ChatModule } from './chat/chat.module';
 import { ChatModel } from './chat/entities/chat.entity';
+import { LogMiddleware } from './common/middleware/log.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.dev.env',
       isGlobal: true,
+      envFilePath: process.env.NODE_ENV=='dev' ? '.dev.env' : '.prod.env',
     }),
     TypeOrmModule.forFeature([
       UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel, PostModel, ChatModel,
@@ -51,4 +52,14 @@ import { ChatModel } from './chat/entities/chat.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    if (process.env.NODE_ENV === 'dev') {
+      consumer.apply(LogMiddleware)
+        .forRoutes({
+          path: '*',
+          method: RequestMethod.ALL,
+        });
+    }
+  }
+}
