@@ -3,19 +3,22 @@ import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm"
 import { SpaceUserBridgeModel } from "./space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
 import { GendersEnum } from "../const/gender.const";
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsString, Length } from "class-validator";
 import { Exclude } from "class-transformer";
 import { PostModel } from "src/post/entities/post.entity";
 import { ChatModel } from "src/chat/entities/chat.entity";
 
 @Entity({ name: 'user' })
 export class UserModel extends BaseModel {
-    @Column()
+    @Column({
+        unique: true,
+    })
     @IsEmail()
     email: string;
 
     @Column()
     @Exclude()
+    @Length(6)
     password: string;
 
     @Column()

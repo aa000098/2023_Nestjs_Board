@@ -15,7 +15,7 @@ export class SpaceUserBridgeModel {
     @JoinColumn({name: 'spaceId', referencedColumnName: 'id'})
     participatingSpaces: SpaceModel;
     
-    @ManyToOne(()=> UserModel, (user)=> user.participatingSpaces)
+    @ManyToOne(()=> UserModel, (user)=> user.participatingSpaces, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     participatingUsers: UserModel;
 
