@@ -1,9 +1,6 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Delete, Get, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
-import { GendersEnum } from './const/gender.const';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserModel } from './entities/user.entity';
-import { UpdateUserDto } from './dto/update-user.dt';
+import { AccessTokenGuard } from 'src/auth/guard/bearer_token.guard';
 
 @Controller('user')
 export class UserController {
@@ -15,27 +12,12 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
-  @Post()
-  @UseInterceptors(ClassSerializerInterceptor)
-  postUser(
-    @Body('email') email: Pick<UserModel, 'email'>,
-    @Body() body: CreateUserDto,
-  ) {
-    return this.userService.createUser(email, body);
-  }
- 
-  @Patch()
-  patchUser(
-    @Body('email') email: Pick<UserModel, 'email'>, 
-    @Body() body: UpdateUserDto,
-  ) {
-    return this.userService.updateUser(email, body)
-  }
-
   @Delete()
+  @UseGuards(AccessTokenGuard)
   deleteUser(
-    @Body('email') email: Pick<UserModel, 'email'>, 
+    @Req() req: any, 
   ) {
-    return this.userService.deleteUser(email);
+    const userId = req.user.id;
+    return this.userService.deleteUser(userId);
   }
 }

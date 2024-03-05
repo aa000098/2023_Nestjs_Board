@@ -1,11 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserModel } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dt';
 import { SpaceUserBridgeModel } from './entities/space_user_bridge.entity';
-import { SpaceModel } from 'src/space/entities/space.entity';
+import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
+import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -33,7 +32,8 @@ export class UserService {
         return user;
     }
 
-    async createUser(email, userDto: CreateUserDto) {
+    async createUser(userDto: RegisterUserDto) {
+        const {email} = userDto;
         const emailExists = await this.userRepository.exists({
             where: {
                 email,
@@ -45,47 +45,37 @@ export class UserService {
         }
 
         const userObject = await this.userRepository.create({
-            email,
             ...userDto
         });
         const newUser = await this.userRepository.save(userObject);
         return newUser;
     }
 
-    async updateUser(email, userDto: UpdateUserDto) {
-        const { password, profileImage } = userDto;
-
-        const user = await this.userRepository.findOne({
-            where: {
-                email: email,
-            },
+    async updateUser(user, userDto: UpdateUserDto) {
+        const updatedUser = this.userRepository.create({
+            ...user,
+            ...userDto,
         });
 
-        if (!user) {
-            throw new NotFoundException();
-        }
-
-        if (password) user.password = password;
-        if (profileImage) user.profileImage = profileImage;
-
-        const updatedUser = await this.userRepository.save(user);
-        return updatedUser;
+        const savedUser = await this.userRepository.save(updatedUser);
+        return savedUser;
     }
 
-    async deleteUser(email) {
+    async deleteUser(userId: number) {
+        if (!userId) {
+            throw new UnauthorizedException('유저 정보가 없습니다.');
+        }
+
         const user = await this.userRepository.findOne({
             where: {
-                email,
+                id: userId,
             },
         });
 
         if (!user) throw new NotFoundException();
 
-        await this.userRepository.delete(user.id);
-
-        return email;
+        return await this.userRepository.delete(user.id);
     }
-
 
     async createBridge(spaceId, userId, spaceRole) {
         const existingBridge = await this.bridgeRepository.exists({
