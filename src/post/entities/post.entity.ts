@@ -49,11 +49,11 @@ export class PostModel extends BaseModel {
     @Column({default: 0})
     curiosity: number;
     
-    @ManyToOne(()=> SpaceModel, (space)=> space.posts)
+    @ManyToOne(()=> SpaceModel, (space)=> space.posts, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'spaceId', referencedColumnName: 'id'})
     space: SpaceModel;
 
-    @ManyToOne(()=> UserModel, (user)=> user.posts)
+    @ManyToOne(()=> UserModel, (user)=> user.posts, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'writerId', referencedColumnName: 'id'})
     writer: UserModel;
 

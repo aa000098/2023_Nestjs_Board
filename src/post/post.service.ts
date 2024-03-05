@@ -4,7 +4,6 @@ import { PostModel } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostTypeEnum } from './const/post-type.const';
 import { PostStateEnum } from './const/post-state.const';
 
 @Injectable()

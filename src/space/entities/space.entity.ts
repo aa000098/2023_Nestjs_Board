@@ -22,6 +22,7 @@ export class SpaceModel extends BaseModel {
 
     @ManyToOne(()=> UserModel, (user)=> user.owningSpaces, {
         nullable:false,
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: 'ownerId', referencedColumnName: 'id'})
     owner: UserModel;

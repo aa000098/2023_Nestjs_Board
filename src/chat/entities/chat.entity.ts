@@ -29,11 +29,11 @@ export class ChatModel extends BaseModel {
     @IsNumber()
     likeCount: number;
 
-    @ManyToOne(()=> PostModel, (post)=> post.chats)
+    @ManyToOne(()=> PostModel, (post)=> post.chats, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'postId', referencedColumnName: 'id'})
     post: PostModel;
 
-    @ManyToOne(()=> UserModel, (user)=> user.chats)
+    @ManyToOne(()=> UserModel, (user)=> user.chats, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'writerId', referencedColumnName: 'id'})
     user: UserModel;
 }
