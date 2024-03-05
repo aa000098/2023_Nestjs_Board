@@ -19,7 +19,7 @@ export class SpaceUserBridgeModel {
     @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     participatingUsers: UserModel;
 
-    @OneToOne(()=> SpaceRoleModel, {cascade: true, eager: true}, )
+    @OneToOne(()=> SpaceRoleModel, {eager: true} )
     @JoinColumn()
     spaceRole: SpaceRoleModel;
 } 
