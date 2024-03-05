@@ -12,7 +12,7 @@ export class LogMiddleware implements NestMiddleware {
         res.on('finish', ()=> {
             const {statusCode} = res;
             this.logger.log(
-                `${method} ${originalUrl} ${statusCode} - ${userAgent} ${ip} ${new Date().toLocaleDateString('kr')}`
+                `${method} ${originalUrl} has been executed ${statusCode} - ${userAgent} ${ip} ${new Date().toLocaleDateString('kr')}`
             )
         })
         
