@@ -33,41 +33,16 @@ npm i -g typescript
 
 # Nestjs 프로젝트 의존성 설치
 $ npm install
-
-# TypeORM 설치
-$ npm i @nestjs/typeorm
-
-# MySQL 설치
-$ npm i mysql2
-
-# Config Module 설치
-$ npm i @nestjs/config
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
-
-# watch mode
 $ npm run start:dev
 
 # production mode
 $ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
 
