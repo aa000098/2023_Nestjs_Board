@@ -15,6 +15,7 @@ import { PostModel } from './post/entities/post.entity';
 import { ChatModule } from './chat/chat.module';
 import { ChatModel } from './chat/entities/chat.entity';
 import { LogMiddleware } from './common/middleware/log.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { LogMiddleware } from './common/middleware/log.middleware';
     UserModule,
     PostModule,
     ChatModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
