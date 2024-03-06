@@ -19,9 +19,22 @@ export class UserService {
 
     async getAllUsers() {
         const users = this.userRepository.find({
-            relations: ['participatingSpaces']
+            select: ['id', 'createdAt', 'updatedAt', 'gender', 'userName', 'profileImage'],
+            relations: ['participatingSpaces', 'owningSpaces']
         });
         return users;
+    }
+
+    async getUserById(userId, viewerId) {
+        const isMyProfile = userId==viewerId;
+        const user = this.userRepository.findOne({
+            select: isMyProfile ? undefined : ['id', 'createdAt', 'updatedAt', 'gender', 'userName', 'profileImage'],
+            where: {
+                id: userId,
+            },
+            relations: isMyProfile ? ['chats', 'posts', 'owningSpaces','participatingSpaces'] : ['owningSpaces','participatingSpaces']
+        })
+        return user;
     }
 
     async getUserByEmail(email: string) {
