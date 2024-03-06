@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
@@ -11,7 +11,7 @@ export class PostService {
     constructor(
         @InjectRepository(PostModel)
         private readonly postRepository: Repository<PostModel>,
-    ) {}
+    ) { }
 
     async getAllPosts(spaceId: number) {
         const posts = await this.postRepository.find({
@@ -36,7 +36,7 @@ export class PostService {
         return post;
     }
 
-    async createPost(spaceId:number, userId: number, postDto: CreatePostDto) {
+    async createPost(spaceId: number, userId: number, postDto: CreatePostDto) {
         const postObject = await this.postRepository.create({
             spaceId,
             writerId: userId,
@@ -47,14 +47,23 @@ export class PostService {
         return newPost;
     }
 
-    async updatePost(id: number, postDto: UpdatePostDto) {
-        const postObject = await this.postRepository.findOne({
+    async updatePost(id: number, userId: number, postDto: UpdatePostDto) {
+        const post = await this.postRepository.findOne({
             where: {
                 id,
             }
         });
+
+        if (!post) {
+            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
+        }
+
+        if (post.writerId != userId) {
+            throw new UnauthorizedException('권한이 없습니다.');
+        }
+
         const updatedPost = this.postRepository.create({
-            ...postObject,
+            ...post,
             ...postDto,
             postState: PostStateEnum.M,
         });
@@ -62,7 +71,21 @@ export class PostService {
         return newPost;
     }
 
-    async deletePost(id: number) {
+    async deletePost(id: number, userId: number) {
+        const post = await this.postRepository.findOne({
+            where: {
+                id,
+            }
+        });
+
+        if (!post) {
+            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
+        }
+
+        if (post.writerId != userId) {
+            throw new UnauthorizedException('권한이 없습니다.');
+        }
+
         return await this.postRepository.delete(id);
     }
 }

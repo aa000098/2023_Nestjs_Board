@@ -38,16 +38,18 @@ export class PostController {
   @UseGuards(AccessTokenGuard)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
+    @User() user: UserModel,
     @Body() body: UpdatePostDto,
   ) {
-    return this.postService.updatePost(postId, body);
+    return this.postService.updatePost(postId, user.id, body);
   }
 
   @Delete(':postId')
   @UseGuards(AccessTokenGuard)
   deletePost(
+    @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
   ) {
-    return this.postService.deletePost(postId);
+    return this.postService.deletePost(postId, user.id);
   }
 }
