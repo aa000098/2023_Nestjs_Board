@@ -3,8 +3,8 @@ import { BaseModel } from "src/common/entities/base.entity";
 import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity";
 import { UserModel } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
-import { SpaceRoleModel } from "./space-role.entity";
 import { PostModel } from "src/space/post/entities/post.entity";
+import { RoleModel } from "../role/entities/role.entity";
 
 @Entity({ name: 'space' })
 export class SpaceModel extends BaseModel {
@@ -30,10 +30,10 @@ export class SpaceModel extends BaseModel {
     @OneToMany(()=> SpaceUserBridgeModel, (bridge)=> bridge.participatingSpaces)
     participatingUsers: SpaceUserBridgeModel[];
 
-    @OneToMany(()=> SpaceRoleModel, (spaceRole)=> spaceRole.space, {
+    @OneToMany(()=> RoleModel, (spaceRole)=> spaceRole.space, {
         cascade: true,
     })
-    spaceRoles: SpaceRoleModel[];
+    roles: RoleModel[];
 
     @OneToMany(()=> PostModel, (post)=> post.space, {
         cascade: true
