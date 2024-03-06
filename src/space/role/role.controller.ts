@@ -38,6 +38,17 @@ export class RoleController {
     return this.roleService.updateRole(spaceId, user.id, roleId, body);
   }
 
+  @Patch(':roleId/:userId')
+  @UseGuards(AccessTokenGuard)
+  patchUserRole(
+    @Param('roleId', ParseIntPipe) roleId: number,
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @User() user: UserModel, 
+  ) {
+    return this.roleService.updateUserRole(spaceId, roleId, userId, user.id);
+  }
+
   @Delete(':roleId')
   @UseGuards(AccessTokenGuard)
   deleteRole(

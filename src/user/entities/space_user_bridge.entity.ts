@@ -1,5 +1,5 @@
 import { SpaceModel } from "src/space/entities/space.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { UserModel } from "./user.entity";
 import { RoleModel } from "src/space/role/entities/role.entity";
 import { IsNumber } from "class-validator";
@@ -26,7 +26,7 @@ export class SpaceUserBridgeModel {
     @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     participatingUsers: UserModel;
 
-    @OneToOne(()=> RoleModel, {eager: true} )
+    @ManyToOne(()=> RoleModel, {eager: true} )
     @JoinColumn({name: 'roleId', referencedColumnName: 'id'})
     role: RoleModel;
 } 

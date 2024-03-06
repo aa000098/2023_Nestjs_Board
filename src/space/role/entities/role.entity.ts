@@ -1,5 +1,5 @@
 import { BaseModel } from "src/common/entities/base.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { IsAlphanumeric, IsBoolean, IsString } from "class-validator";
 import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
@@ -21,10 +21,14 @@ export class RoleModel extends BaseModel {
     @IsBoolean()
     isAdministrator: boolean;
 
+    @Column({default: false})
+    @IsBoolean()
+    isOwner: boolean;
+
     @Column({length: 8, unique: true})
     @IsAlphanumeric()
     entryCode: string;
 
-    @OneToOne(()=>SpaceUserBridgeModel, (bridge)=> bridge.role)
-    bridge: RoleModel;
+    @OneToMany(()=>SpaceUserBridgeModel, (bridge)=> bridge.role)
+    bridges: SpaceUserBridgeModel[];
 }

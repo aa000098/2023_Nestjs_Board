@@ -6,6 +6,7 @@ import { SpaceUserBridgeModel } from './entities/space_user_bridge.entity';
 import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
 import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
 import { CreateRoleDto } from 'src/space/role/dto/create-role.dto';
+import { RoleModel } from 'src/space/role/entities/role.entity';
 
 @Injectable()
 export class UserService {
@@ -100,7 +101,7 @@ export class UserService {
         });
 
         if (existingBridge) {
-            return null;
+            throw new BadRequestException('Space에 이미 참가한 유저입니다.')
         }
 
         const bridgeObject = await this.bridgeRepository.create({
@@ -122,7 +123,7 @@ export class UserService {
         });
 
         if (!existingBridge) {
-            return false;
+            throw new BadRequestException('Space에 없는 유저입니다.')
         }
         
         return await this.bridgeRepository.delete({
@@ -138,7 +139,7 @@ export class UserService {
                 }
             });
             if (!bridge) {
-                return null
+                throw new BadRequestException('Space에 없는 유저입니다.')
             }
             return bridge.role;
         }
@@ -150,5 +151,26 @@ export class UserService {
                 }
             })
             return result;
+        }
+
+        async setRoleOfUser(spaceId: number, userId: number, role: RoleModel) {
+            const bridge = await this.bridgeRepository.findOne({
+                where: {
+                    spaceId,
+                    userId
+                }
+            });
+
+            if (!bridge) {
+                throw new BadRequestException('Space에 없는 유저입니다.')
+            }
+
+            if (bridge.role.isOwner) {
+                throw new BadRequestException('소유자의 권한은 변경할 수 없습니다.');
+            }
+
+            const chagnedBridge = await this.bridgeRepository.save({ spaceId, userId, role });
+            
+            return chagnedBridge;
         }
 }

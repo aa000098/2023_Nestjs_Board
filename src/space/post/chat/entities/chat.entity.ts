@@ -35,5 +35,5 @@ export class ChatModel extends BaseModel {
 
     @ManyToOne(()=> UserModel, (user)=> user.chats, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'writerId', referencedColumnName: 'id'})
-    user: UserModel;
+    writer: UserModel;
 }

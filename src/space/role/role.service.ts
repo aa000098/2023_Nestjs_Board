@@ -34,7 +34,7 @@ export class RoleService {
 
     async createRole(spaceId, roleDto: CreateRoleDto) {
         const entryCode = this.generateEntryCode();
-        const existCode = this.roleRepository.exists({
+        const existCode = await this.roleRepository.exists({
             where: {
                 entryCode,
             }
@@ -52,7 +52,7 @@ export class RoleService {
     }
 
     async createDefaultRole(spaceId: number) {
-        const roleDto = {roleName: '소유자', isAdministrator: true};
+        const roleDto: CreateRoleDto = {roleName: '소유자', isAdministrator: true, isOwner: true,};
         const defaultRole = await this.createRole(spaceId, roleDto);
         return defaultRole;
     }
@@ -103,8 +103,28 @@ export class RoleService {
             ...roleDto,
         });
         return updatedRole;
+    }
 
-        
+    async updateUserRole(spaceId: number, roleId: number, userId: number, changerId: number) {
+        const changerRole = await this.userService.getRoleOfUser(spaceId, changerId);
+
+        if (!changerRole.isAdministrator) {
+            throw new BadRequestException('관리자가 아닙니다.');
+        }
+
+        const role = await this.roleRepository.findOne({
+            where: {
+                id: roleId,
+            }
+        });
+
+        if (!changerRole.isOwner && role.isOwner) {
+            throw new BadRequestException('소유자가 아닙니다.');
+        }
+
+        const changedRole = await this.userService.setRoleOfUser(spaceId, userId, role);
+
+        return changedRole;
     }
 
     async deleteRole(spaceId:number, userId: number, roleId: number) {
