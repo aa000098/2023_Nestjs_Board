@@ -1,12 +1,12 @@
 import { BaseModel } from "src/common/entities/base.entity";
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { SpaceUserBridgeModel } from "./space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
 import { GendersEnum } from "../const/gender.const";
 import { IsEmail, IsString, Length } from "class-validator";
 import { Exclude } from "class-transformer";
-import { PostModel } from "src/post/entities/post.entity";
-import { ChatModel } from "src/chat/entities/chat.entity";
+import { PostModel } from "src/space/post/entities/post.entity";
+import { ChatModel } from "src/space/post/chat/entities/chat.entity";
 
 @Entity({ name: 'user' })
 export class UserModel extends BaseModel {

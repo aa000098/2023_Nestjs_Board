@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostModel } from './entities/post.entity';
 import { Repository } from 'typeorm';
+import { PostModel } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStateEnum } from './const/post-state.const';
@@ -13,8 +13,12 @@ export class PostService {
         private readonly postRepository: Repository<PostModel>,
     ) {}
 
-    async getAllPosts() {
-        const posts = await this.postRepository.find();
+    async getAllPosts(spaceId: number) {
+        const posts = await this.postRepository.find({
+            where: {
+                spaceId
+            }
+        });
         return posts
     }
 
@@ -24,11 +28,18 @@ export class PostService {
                 id,
             }
         });
+
+        if (!post) {
+            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
+        }
+
         return post;
     }
 
-    async createPost(postDto: CreatePostDto) {
+    async createPost(spaceId:number, userId: number, postDto: CreatePostDto) {
         const postObject = await this.postRepository.create({
+            spaceId,
+            writerId: userId,
             ...postDto
         });
 
@@ -42,7 +53,7 @@ export class PostService {
                 id,
             }
         });
-        const updatedPost = await this.postRepository.create({
+        const updatedPost = this.postRepository.create({
             ...postObject,
             ...postDto,
             postState: PostStateEnum.M,

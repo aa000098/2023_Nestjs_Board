@@ -5,7 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { PostTypeEnum } from "../const/post-type.const";
 import { IsBoolean, IsString } from "class-validator";
 import { PostStateEnum } from "../const/post-state.const";
-import { ChatModel } from "src/chat/entities/chat.entity";
+import { ChatModel } from "src/space/post/chat/entities/chat.entity";
 
 @Entity({name: 'post'})
 export class PostModel extends BaseModel {

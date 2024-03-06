@@ -1,6 +1,6 @@
 import { IsBoolean, IsNumber, IsString } from "class-validator";
 import { BaseModel } from "src/common/entities/base.entity";
-import { PostModel } from "src/post/entities/post.entity";
+import { PostModel } from "src/space/post/entities/post.entity";
 import { UserModel } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 

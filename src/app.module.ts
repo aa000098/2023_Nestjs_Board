@@ -10,12 +10,12 @@ import { UserModule } from './user/user.module';
 import { UserModel } from './user/entities/user.entity';
 import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
 import { SpaceRoleModel } from './space/entities/space-role.entity';
-import { PostModule } from './post/post.module';
-import { PostModel } from './post/entities/post.entity';
-import { ChatModule } from './chat/chat.module';
-import { ChatModel } from './chat/entities/chat.entity';
+import { PostModel } from './space/post/entities/post.entity';
+import { ChatModule } from './space/post/chat/chat.module';
+import { ChatModel } from './space/post/chat/entities/chat.entity';
 import { LogMiddleware } from './common/middleware/log.middleware';
 import { AuthModule } from './auth/auth.module';
+import { PostModule } from './space/post/post.module';
 
 @Module({
   imports: [

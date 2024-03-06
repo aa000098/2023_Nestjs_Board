@@ -4,7 +4,7 @@ import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity
 import { UserModel } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { SpaceRoleModel } from "./space-role.entity";
-import { PostModel } from "src/post/entities/post.entity";
+import { PostModel } from "src/space/post/entities/post.entity";
 
 @Entity({ name: 'space' })
 export class SpaceModel extends BaseModel {

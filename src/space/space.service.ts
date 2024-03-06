@@ -6,7 +6,6 @@ import { SpaceRoleModel } from './entities/space-role.entity';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UserService } from 'src/user/user.service';
 import { CreateSpaceRoleDto } from './dto/create-space-role.dto';
-import { SpaceUserDto } from './dto/space-user.dto';
 
 @Injectable()
 export class SpaceService {
@@ -36,24 +35,20 @@ export class SpaceService {
         return entryCode;
     }
 
-    async createSpace(email, spaceDto: CreateSpaceDto) {
+    async createSpace(ownerId: number, spaceDto: CreateSpaceDto) {
         const { spaceName, spaceLogo, spaceRoles } = spaceDto;
-        const ownerUser = await this.userService.getUserByEmail(email);
-        const spaceObject = await this.spaceRepository.create({
-            owner: ownerUser,
+        const newSpace = await this.spaceRepository.save({
+            ownerId,
             spaceName,
             spaceLogo,
         });
 
-        const newSpace = await this.spaceRepository.save(spaceObject);
-
         const spaceId = newSpace.id;
 
         const ownerEntryCode = this.generateEntryCode();
-        const roleObject = await this.spaceRoleRepository.create({
+        await this.spaceRoleRepository.save({
             spaceId, role: '소유자', isAdministrator: true, entryCode: ownerEntryCode
         });
-        await this.spaceRoleRepository.save(roleObject);
 
         for (const spaceRoleDto of spaceRoles) {
             const { role, isAdministrator } = spaceRoleDto;
@@ -64,17 +59,20 @@ export class SpaceService {
             await this.spaceRoleRepository.save(spaceRoleObject);
         };
 
-        const space = this.addUserToSpace({ spaceId, email }, ownerEntryCode);
+        const space = this.addUserToSpace( spaceId, ownerId, ownerEntryCode);
 
         return space;
     }
 
-    async getAllSpaceRole() {
-        return this.spaceRoleRepository.find();
+    async getSpaceRole(spaceId: number) {
+        return this.spaceRoleRepository.find({
+            where: {
+                spaceId,
+            }
+        });
     }
 
-    async addUserToSpace(spaceUserDto: SpaceUserDto, entryCode) {
-        const { spaceId, email } = spaceUserDto;
+    async addUserToSpace(spaceId: number, userId: number, entryCode: string) {
         const space = await this.spaceRepository.findOne({
             where: {
                 id: spaceId
@@ -84,13 +82,6 @@ export class SpaceService {
 
         if (!space) {
             throw new Error('Space가 없습니다.');
-        }
-
-        const user = await this.userService.getUserByEmail(email);
-        const userId = user.id;
-
-        if (!user) {
-            throw new Error('User가 없습니다.');
         }
 
         const spaceRoles = space.spaceRoles;
@@ -117,8 +108,7 @@ export class SpaceService {
         return updatedSpace;
     }
 
-    async deleteUserFromSpace(spaceUserDto: SpaceUserDto) {
-        const { spaceId, email } = spaceUserDto;
+    async deleteUserFromSpace(spaceId, userId) {
         const space = await this.spaceRepository.findOne({
             where: {
                 id: spaceId
@@ -128,13 +118,6 @@ export class SpaceService {
 
         if (!space) {
             throw new Error('Space가 없습니다.');
-        }
-
-        const user = await this.userService.getUserByEmail(email);
-        const userId = user.id;
-
-        if (!user) {
-            throw new Error('User가 없습니다.');
         }
 
         const deleteResult = await this.userService.deleteBridge(spaceId, userId);
@@ -146,25 +129,13 @@ export class SpaceService {
         return true;
     }
 
-    async deleteSpace(userSpaceDto) {
-        const { spaceId, email } = userSpaceDto;
+    async deleteSpace(spaceId:number, userId:number) {
         const space = await this.spaceRepository.findOne({
             where: {
                 id: spaceId
             },
             relations: ['spaceRoles', 'participatingUsers']
         });
-
-        if (!space) {
-            throw new Error('Space가 없습니다.');
-        }
-
-        const user = await this.userService.getUserByEmail(email);
-        const userId = user.id;
-
-        if (!user) {
-            throw new Error('User가 없습니다.');
-        }
 
         if (space.ownerId != userId) {
             throw new Error('Space 소유자가 아닙니다.');
@@ -173,25 +144,8 @@ export class SpaceService {
         return await this.spaceRepository.delete({ id: spaceId });
     }
 
-    async createSpaceRole(email, spaceRoleDto: CreateSpaceRoleDto) {
-        const { spaceId, role, isAdministrator } = spaceRoleDto;
-        const space = await this.spaceRepository.findOne({
-            where: {
-                id: spaceId
-            },
-            relations: ['spaceRole', 'participatingUsers']
-        });
-
-        if (!space) {
-            throw new Error('Space가 없습니다.');
-        }
-
-        const user = await this.userService.getUserByEmail(email);
-        const userId = user.id;
-
-        if (!user) {
-            throw new Error('User가 없습니다.');
-        }
+    async createSpaceRole(spaceId: number, userId: number, spaceRoleDto: CreateSpaceRoleDto) {
+        const { role, isAdministrator } = spaceRoleDto;
 
         const userRole = await this.userService.getRoleOfUser(spaceId, userId);
 
@@ -222,8 +176,13 @@ export class SpaceService {
         return newRole;
     }
 
-    async deleteSpaceRole(body) {
-        const {spaceId, roleId} = body;
+    async deleteSpaceRole(spaceId:number, userId: number, roleId: number) {
+        const userRole = await this.userService.getRoleOfUser(spaceId, userId)
+
+        if (!userRole.isAdministrator) {
+            throw new Error('관리자가 아닙니다.');
+        }
+
         return await this.spaceRoleRepository.delete({id: roleId});
     }
 }

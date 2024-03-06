@@ -1,9 +1,10 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UserModel } from 'src/user/entities/user.entity';
-import { SpaceUserDto} from './dto/space-user.dto';
 import { CreateSpaceRoleDto } from './dto/create-space-role.dto';
+import { AccessTokenGuard } from 'src/auth/guard/bearer_token.guard';
+import { User } from 'src/user/decorator/user.decorator';
 
 @Controller('space')
 export class SpaceController {
@@ -16,54 +17,68 @@ export class SpaceController {
   }
 
   @Post()
+  @UseGuards(AccessTokenGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   postSpace(
-    @Body('email') email: Pick<UserModel, 'email'>, 
+    @User() user: UserModel, 
     @Body() body: CreateSpaceDto,
   ) {
-    return this.spaceService.createSpace(email, body);
+    return this.spaceService.createSpace(user.id, body);
   }
 
-  @Get('role')
-  getSpaceRole() {
-    return this.spaceService.getAllSpaceRole();
+  @Get('role/:spaceId')
+  getSpaceRole(
+    @Param('spaceId', ParseIntPipe) spaceId: number
+  ) {
+    return this.spaceService.getSpaceRole(spaceId);
   }
 
-  @Post('join')
+  @Post('join/:spaceId')
+  @UseGuards(AccessTokenGuard)
   joinSpace(
-    @Body() body: SpaceUserDto,
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @User() user: UserModel,
     @Body('entrycode') entryCode: string,
   ) {
-    return this.spaceService.addUserToSpace(body, entryCode);
+    return this.spaceService.addUserToSpace(spaceId, user.id, entryCode);
   }
 
-  @Delete('withdraw')
+  @Delete('withdraw/:spaceId')
+  @UseGuards(AccessTokenGuard)
   withdrawSpace(
-    @Body() body: SpaceUserDto,
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @User() user: UserModel,
   ) {
-    return this.spaceService.deleteUserFromSpace(body);
+    return this.spaceService.deleteUserFromSpace(spaceId, user.id);
   }
 
-  @Delete()
+  @Delete(':spaceId')
+  @UseGuards(AccessTokenGuard)
   deleteSpace(
-    @Body() body: SpaceUserDto,
+    @Param('spaceid', ParseIntPipe) spaceId: number,
+    @User() user: UserModel
   ) {
-    return this.spaceService.deleteSpace(body);
+    return this.spaceService.deleteSpace(spaceId, user.id);
   }
 
-  @Post('role')
+  @Post('role/:spaceId')
+  @UseGuards(AccessTokenGuard)
   createSpaceRole(
-    @Body('email') email: number,
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @User() user: UserModel,
     @Body() body: CreateSpaceRoleDto,
   ) {
-    return this.spaceService.createSpaceRole(email, body);
+    return this.spaceService.createSpaceRole(spaceId, user.id, body);
   }
 
-  @Delete('role')
+  @Delete('role/:spaceId')
+  @UseGuards(AccessTokenGuard)
   deleteSpaceRole(
-    @Body() body,
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @User() user: UserModel,
+    @Body('roleId', ParseIntPipe) roleId: number,
   ) {
-    return this.spaceService.deleteSpaceRole(body);
+    return this.spaceService.deleteSpaceRole(spaceId, user.id, roleId);
   }
 
 }
