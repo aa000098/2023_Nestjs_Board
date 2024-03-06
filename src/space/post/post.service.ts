@@ -29,10 +29,6 @@ export class PostService {
             }
         });
 
-        if (!post) {
-            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
-        }
-
         return post;
     }
 
@@ -54,10 +50,6 @@ export class PostService {
             }
         });
 
-        if (!post) {
-            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
-        }
-
         if (post.writerId != userId) {
             throw new UnauthorizedException('권한이 없습니다.');
         }
@@ -78,14 +70,18 @@ export class PostService {
             }
         });
 
-        if (!post) {
-            throw new BadRequestException('해당 게시글은 존재하지 않습니다.');
-        }
-
         if (post.writerId != userId) {
             throw new UnauthorizedException('권한이 없습니다.');
         }
 
         return await this.postRepository.delete(id);
+    }
+
+    async checkSpaceExistsById(id: number) {
+        return await this.postRepository.exists({
+            where: {
+                id
+            }
+        });
     }
 }

@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SpaceModel } from './entities/space.entity';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
-import { PostModule } from './post/post.module';
 import { RoleModule } from './role/role.module';
 
 @Module({
@@ -13,8 +12,10 @@ import { RoleModule } from './role/role.module';
     TypeOrmModule.forFeature([SpaceModel]),
     UserModule,
     AuthModule,
-    PostModule,
     RoleModule,
+  ],
+  exports: [
+    SpaceService,
   ],
   controllers: [SpaceController],
   providers: [SpaceService],

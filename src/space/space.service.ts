@@ -126,4 +126,12 @@ export class SpaceService {
 
         return await this.spaceRepository.delete({ id: spaceId });
     }
+
+    async checkSpaceExistsById(id: number) {
+        return await this.spaceRepository.exists({
+            where: {
+                id,
+            }
+        });
+    }
 }
