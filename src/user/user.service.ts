@@ -5,6 +5,7 @@ import { UserModel } from './entities/user.entity';
 import { SpaceUserBridgeModel } from './entities/space_user_bridge.entity';
 import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
 import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
+import { CreateRoleDto } from 'src/space/role/dto/create-role.dto';
 
 @Injectable()
 export class UserService {
@@ -51,7 +52,7 @@ export class UserService {
         return newUser;
     }
 
-    async updateUser(user, userDto: UpdateUserDto) {
+    async updateUser(user: UserModel, userDto: UpdateUserDto) {
         const updatedUser = this.userRepository.create({
             ...user,
             ...userDto,
@@ -77,7 +78,7 @@ export class UserService {
         return await this.userRepository.delete(user.id);
     }
 
-    async createBridge(spaceId, userId, spaceRole) {
+    async createBridge(spaceId: number, userId: number, role: CreateRoleDto) {
         const existingBridge = await this.bridgeRepository.exists({
             where: {
                 spaceId,
@@ -92,14 +93,14 @@ export class UserService {
         const bridgeObject = await this.bridgeRepository.create({
             spaceId,
             userId,
-            spaceRole
+            role
         });
 
         const newBridge = await this.bridgeRepository.save(bridgeObject);
         return newBridge;
     }
 
-    async deleteBridge(spaceId, userId) {
+    async deleteBridge(spaceId: number, userId: number) {
         const existingBridge = await this.bridgeRepository.exists({
             where: {
                 spaceId,
@@ -111,14 +112,12 @@ export class UserService {
             return false;
         }
         
-        await this.bridgeRepository.delete({
+        return await this.bridgeRepository.delete({
                 spaceId, userId
             });
-            
-        return true;
         }
 
-        async getRoleOfUser(spaceId, userId) {
+        async getRoleOfUser(spaceId: number, userId: number) {
             const bridge = await this.bridgeRepository.findOne({
                 where: {
                     spaceId,
@@ -128,6 +127,15 @@ export class UserService {
             if (!bridge) {
                 return null
             }
-            return bridge.spaceRole;
+            return bridge.role;
+        }
+
+        async isRoleInUse(roleId: number) {
+            const result = await this.bridgeRepository.exists({
+                where: {
+                    roleId,
+                }
+            })
+            return result;
         }
 }

@@ -9,13 +9,14 @@ import { ENV_DB_DATABASE_KEY, ENV_DB_HOST_KEY, ENV_DB_PASSWORD_KEY, ENV_DB_PORT_
 import { UserModule } from './user/user.module';
 import { UserModel } from './user/entities/user.entity';
 import { SpaceUserBridgeModel } from './user/entities/space_user_bridge.entity';
-import { SpaceRoleModel } from './space/entities/space-role.entity';
 import { PostModel } from './space/post/entities/post.entity';
 import { ChatModule } from './space/post/chat/chat.module';
 import { ChatModel } from './space/post/chat/entities/chat.entity';
 import { LogMiddleware } from './common/middleware/log.middleware';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './space/post/post.module';
+import { RoleModule } from './space/role/role.module';
+import { RoleModel } from './space/role/entities/role.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { PostModule } from './space/post/post.module';
       envFilePath: process.env.NODE_ENV=='dev' ? '.dev.env' : '.prod.env',
     }),
     TypeOrmModule.forFeature([
-      UserModel, SpaceModel, SpaceRoleModel, SpaceUserBridgeModel, PostModel, ChatModel,
+      UserModel, SpaceModel, RoleModel, SpaceUserBridgeModel, PostModel, ChatModel,
     ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -38,7 +39,7 @@ import { PostModule } from './space/post/post.module';
         SpaceModel,
         UserModel,
         SpaceUserBridgeModel,
-        SpaceRoleModel,
+        RoleModel,
         PostModel,
         ChatModel,
       ],
@@ -50,6 +51,7 @@ import { PostModule } from './space/post/post.module';
     PostModule,
     ChatModule,
     AuthModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
