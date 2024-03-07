@@ -23,7 +23,6 @@ export class ChatModule implements NestModule {
     consumer
     .apply(ChatExistsMiddleware)
     .forRoutes(
-      ChatController,
       {path: 'space/:spaceId/post/:postId/chat/:chatId*', method: RequestMethod.ALL}
     )
   }
