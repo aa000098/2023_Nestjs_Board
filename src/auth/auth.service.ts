@@ -66,6 +66,7 @@ export class AuthService {
 
     signToken(user, isRefreshToken: boolean) {
         const { email } = user;
+
         const payload = {
             email,
             type: isRefreshToken ? 'refresh' : 'access',
@@ -75,9 +76,10 @@ export class AuthService {
             secret: this.configService.get(JWT_SECRET),
             expiresIn: isRefreshToken ? '30d' : '1h',
         });
+
     }
 
-    getToken(user) {
+    getToken(user: UserModel) {
         return {
             accessToken: this.signToken(user, false),
             refreshToken: this.signToken(user, true),

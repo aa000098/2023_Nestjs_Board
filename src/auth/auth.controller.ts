@@ -1,16 +1,17 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Patch, Post, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BasicTokenGuard } from './guard/basic_token.guard';
 import { BearerTokenGuard, RefreshTokenGuard } from './guard/bearer_token.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @UseInterceptors(ClassSerializerInterceptor)
+  @IsPublic()
   postRegisterUser(
     @Body() body: RegisterUserDto,
   ) {
@@ -18,6 +19,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @IsPublic()
   @UseGuards(BasicTokenGuard)
   async postLoginUser(
     @Req() req: any,
@@ -26,13 +28,12 @@ export class AuthController {
     const {accessToken, refreshToken} = await this.authService.getToken(req.user);
     res.cookie('accessToken', accessToken, {httpOnly: true});
     res.cookie('refreshToken', refreshToken, {httpOnly: true});
-    return res.send({
+    res.send({
       message: 'success'
     });
   }
 
   @Patch('edit')
-  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(BearerTokenGuard)
   async patchUser(
     @Req() req: any,
@@ -42,18 +43,20 @@ export class AuthController {
     return this.authService.updateUser(user, body);
   }
 
-  @Get('logout')
+  @Delete('logout')
+  @IsPublic()
   logout(
     @Res() res: any,
   ) {
     res.cookie('accessToken', '', { maxAge: 0 });
     res.cookie('refreshToken', '', { maxAge: 0 });
-    return res.send({
+    res.send({
       message: 'success'
     });
   }
 
   @Post('token/access')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenAccess(
     @Req() req: any,
@@ -64,12 +67,13 @@ export class AuthController {
     const newToken = this.authService.rotateToken(token, false);
 
     res.cookie('accessToken', newToken, { httpOnly: true });
-    return res.send({
+    res.send({
       message: 'success'
     });
   }
 
   @Post('token/refresh')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenRefresh(
     @Req() req: any,
@@ -80,7 +84,7 @@ export class AuthController {
     const newToken = this.authService.rotateToken(token, true);
 
     res.cookie('refreshToken', newToken, { httpOnly: true });
-    return res.send({
+    res.send({
       message: 'success'
     });
   }

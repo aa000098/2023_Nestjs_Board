@@ -3,6 +3,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { IsAlphanumeric, IsBoolean, IsString } from "class-validator";
 import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity";
 import { SpaceModel } from "src/space/entities/space.entity";
+import { RoleEnum } from "../const/role.const";
+import { Exclude } from "class-transformer";
 
 @Entity({name: 'role' })
 export class RoleModel extends BaseModel {
@@ -17,13 +19,12 @@ export class RoleModel extends BaseModel {
     @IsString()
     roleName: string;
 
-    @Column()
-    @IsBoolean()
-    isAdministrator: boolean;
-
-    @Column({default: false})
-    @IsBoolean()
-    isOwner: boolean;
+    @Column({
+        type: 'enum',
+        enum: RoleEnum,
+        default: RoleEnum.USER
+    })
+    authority: RoleEnum;
 
     @Column({length: 8, unique: true})
     @IsAlphanumeric()

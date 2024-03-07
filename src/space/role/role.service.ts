@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleModel } from './entities/role.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UserService } from 'src/user/user.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleEnum } from './const/role.const';
 
 @Injectable()
 export class RoleService {
@@ -13,13 +14,14 @@ export class RoleService {
         private readonly roleRepository: Repository<RoleModel>,
 
         private readonly userService: UserService,
-    ) {}
+    ) { }
 
     async getRoles(spaceId: number) {
         return this.roleRepository.find({
             where: {
                 spaceId,
-            }
+                authority: Not(RoleEnum.OWNER)
+            },
         });
     }
 
@@ -32,7 +34,7 @@ export class RoleService {
         return entryCode;
     }
 
-    async createRole(spaceId, roleDto: CreateRoleDto) {
+    async createRole(spaceId: number, roleDto: CreateRoleDto) {
         const entryCode = this.generateEntryCode();
         const existCode = await this.roleRepository.exists({
             where: {
@@ -43,28 +45,21 @@ export class RoleService {
             throw new InternalServerErrorException('중복 코드가 생성되었습니다.');
         }
 
-        const defaultRole = await this.roleRepository.save({
+        const role = await this.roleRepository.save({
             spaceId,
             ...roleDto,
             entryCode,
         });
-        return defaultRole;
+        return role;
     }
 
     async createDefaultRole(spaceId: number) {
-        const roleDto: CreateRoleDto = {roleName: '소유자', isAdministrator: true, isOwner: true,};
-        const defaultRole = await this.createRole(spaceId, roleDto);
+        const defaultRole = this.createRole(spaceId, { roleName: '소유자', 'authority': RoleEnum.OWNER });
         return defaultRole;
     }
 
-    async createNewRole(spaceId: number, userId: number, roleDto: CreateRoleDto) {
+    async createNewRole(spaceId: number, roleDto: CreateRoleDto) {
         const { roleName } = roleDto;
-
-        const userRole = await this.userService.getRoleOfUser(spaceId, userId);
-
-        if (!userRole || !userRole.isAdministrator) {
-            throw new Error('권한이 없는 사용자입니다.')
-        }
 
         const existingRole = await this.roleRepository.exists({
             where: {
@@ -74,28 +69,35 @@ export class RoleService {
         });
 
         if (existingRole) {
-            throw new Error('이미 존재하는 이름의 역할입니다.');
+            throw new BadRequestException('이미 존재하는 이름의 역할입니다.');
         }
 
         const newRole = await this.createRole(spaceId, roleDto);
         return newRole;
     }
-    
-    async updateRole(spaceId:number, userId: number, roleId: number, roleDto: UpdateRoleDto) {
-        const userRole = await this.userService.getRoleOfUser(spaceId, userId)
 
-        if (!userRole.isAdministrator) {
-            throw new Error('관리자가 아닙니다.');
-        }
-
+    async updateRole(roleId: number, roleDto: UpdateRoleDto) {
         const role = await this.roleRepository.findOne({
             where: {
                 id: roleId
             }
         });
 
-        if (!role) {
-            throw new Error('Space에 없는 역할입니다.');
+        if (role.authority == RoleEnum.OWNER || roleDto.authority == RoleEnum.OWNER) {
+            throw new BadRequestException('소유자 역할은 변경할 수 없습니다.');
+        }
+
+        if (roleDto.roleName) {
+            const existingRole = await this.roleRepository.exists({
+                where: {
+                    spaceId: role.spaceId,
+                    roleName: roleDto.roleName
+                }
+            });
+
+            if (existingRole) {
+                throw new BadRequestException('이미 존재하는 이름의 역할입니다.');
+            }
         }
 
         const updatedRole = await this.roleRepository.save({
@@ -105,21 +107,18 @@ export class RoleService {
         return updatedRole;
     }
 
-    async updateUserRole(spaceId: number, roleId: number, userId: number, changerId: number) {
-        const changerRole = await this.userService.getRoleOfUser(spaceId, changerId);
-
-        if (!changerRole.isAdministrator) {
-            throw new BadRequestException('관리자가 아닙니다.');
-        }
-
+    async updateUserRole(spaceId: number, roleId: number, userId: number, changerAuthority: RoleEnum) {
         const role = await this.roleRepository.findOne({
             where: {
                 id: roleId,
             }
         });
+        console.log(changerAuthority)
 
-        if (!changerRole.isOwner && role.isOwner) {
-            throw new BadRequestException('소유자가 아닙니다.');
+        if (role.authority==RoleEnum.OWNER) {
+            if (changerAuthority!=RoleEnum.OWNER) {
+                throw new BadRequestException('소유자 역할은 소유자만 부여할 수 있습니다.');
+            }
         }
 
         const changedRole = await this.userService.setRoleOfUser(spaceId, userId, role);
@@ -127,19 +126,21 @@ export class RoleService {
         return changedRole;
     }
 
-    async deleteRole(spaceId:number, userId: number, roleId: number) {
-        const userRole = await this.userService.getRoleOfUser(spaceId, userId)
-
-        if (!userRole.isAdministrator) {
-            throw new Error('관리자가 아닙니다.');
-        }
-
+    async deleteRole(roleId: number) {
         const isRoleInUse = await this.userService.isRoleInUse(roleId);
-        
+
         if (isRoleInUse) {
             throw new BadRequestException('해당 역할을 사용중인 유저가 있습니다.');
         }
 
-        return await this.roleRepository.delete({id: roleId});
+        return await this.roleRepository.delete({ id: roleId });
+    }
+
+    async checkRoleExistsById(id: number) {
+        return this.roleRepository.exists({
+            where: {
+                id,
+            }
+        });
     }
 }

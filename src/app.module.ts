@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SpaceModule } from './space/space.module';
@@ -17,12 +17,15 @@ import { AuthModule } from './auth/auth.module';
 import { PostModule } from './space/post/post.module';
 import { RoleModule } from './space/role/role.module';
 import { RoleModel } from './space/role/entities/role.entity';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { RoleGuard } from './space/role/guard/role.guard';
+import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV=='dev' ? '.dev.env' : '.prod.env',
+      envFilePath: process.env.NODE_ENV == 'dev' ? '.dev.env' : '.prod.env',
     }),
     TypeOrmModule.forFeature([
       UserModel, SpaceModel, RoleModel, SpaceUserBridgeModel, PostModel, ChatModel,
@@ -54,7 +57,21 @@ import { RoleModel } from './space/role/entities/role.entity';
     RoleModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

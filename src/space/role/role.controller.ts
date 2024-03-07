@@ -1,16 +1,19 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer_token.guard';
 import { UserModel } from 'src/user/entities/user.entity';
 import { User } from 'src/user/decorator/user.decorator';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { Role } from './decorator/role.decorator';
+import { RoleEnum } from './const/role.const';
+import { RoleModel } from './entities/role.entity';
 
 @Controller('space/:spaceId/role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   getRoles(
     @Param('spaceId', ParseIntPipe) spaceId: number,
   ) {
@@ -18,45 +21,40 @@ export class RoleController {
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   createRole(
     @Param('spaceId', ParseIntPipe) spaceId: number,
-    @User() user: UserModel,
     @Body() body: CreateRoleDto,
   ) {
-    return this.roleService.createNewRole(spaceId, user.id, body);
+    return this.roleService.createNewRole(spaceId, body);
   }
 
   @Patch(':roleId')
-  @UseGuards(AccessTokenGuard)
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchRole(
-    @Param('spaceId', ParseIntPipe) spaceId: number,
-    @User() user: UserModel,
     @Param('roleId', ParseIntPipe) roleId: number,
     @Body() body: UpdateRoleDto,
   ) {
-    return this.roleService.updateRole(spaceId, user.id, roleId, body);
+    return this.roleService.updateRole(roleId, body);
   }
 
   @Patch(':roleId/:userId')
-  @UseGuards(AccessTokenGuard)
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchUserRole(
     @Param('roleId', ParseIntPipe) roleId: number,
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Param('userId', ParseIntPipe) userId: number,
-    @User() user: UserModel, 
+    @Req() req: any,
   ) {
-    return this.roleService.updateUserRole(spaceId, roleId, userId, user.id);
+    return this.roleService.updateUserRole(spaceId, roleId, userId, req.userRole.authority);
   }
 
   @Delete(':roleId')
-  @UseGuards(AccessTokenGuard)
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   deleteRole(
-    @Param('spaceId', ParseIntPipe) spaceId: number,
-    @User() user: UserModel,
     @Param('roleId', ParseIntPipe) roleId: number,
   ) {
-    return this.roleService.deleteRole(spaceId, user.id, roleId);
+    return this.roleService.deleteRole(roleId);
   }
 
 }
