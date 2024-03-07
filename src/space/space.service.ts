@@ -19,7 +19,7 @@ export class SpaceService {
 
     async getAllSpaces() {
         const spaces = await this.spaceRepository.find({
-            relations: ['owner', 'roles', 'participatingUsers']
+            relations: ['participatingUsers']
         });
         return spaces
     }
@@ -34,11 +34,10 @@ export class SpaceService {
 
         const spaceId = newSpace.id;
 
-        const ownerRole = await this.roleService.createDefaultRole(spaceId);        
-        await this.addUserToSpace( spaceId, ownerId, ownerRole.entryCode);
-
+        const ownerRole = await this.roleService.createDefaultRole(spaceId);
+        await this.addUserToSpace(spaceId, ownerId, ownerRole.entryCode);
         for (const roleDto of roles) {
-            await this.roleService.createNewRole(spaceId, ownerId, roleDto)
+            await this.roleService.createNewRole(spaceId, roleDto);
         };
 
         const space = this.spaceRepository.findOne({
@@ -59,10 +58,6 @@ export class SpaceService {
             relations: ['roles', 'participatingUsers']
         });
 
-        if (!space) {
-            throw new BadRequestException('존재하지 않는 Space입니다.');
-        }
-
         const roles = space.roles;
         const role = roles.find((role) => {
             return role.entryCode == entryCode;
@@ -82,7 +77,7 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['roles', 'participatingUsers']
+            relations: ['participatingUsers']
         });
         return updatedSpace;
     }
@@ -92,12 +87,8 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['roles', 'participatingUsers']
+            relations: ['participatingUsers']
         });
-
-        if (!space) {
-            throw new BadRequestException('존재하지 않는 Space입니다.');
-        }
 
         const deleteResult = await this.userService.deleteBridge(spaceId, userId);
 
@@ -113,16 +104,8 @@ export class SpaceService {
             where: {
                 id: spaceId
             },
-            relations: ['roles', 'participatingUsers']
+            relations: ['participatingUsers']
         });
-
-        if (!space) {
-            throw new BadRequestException('존재하지 않는 Space입니다.');
-        }
-
-        if (space.ownerId != userId) {
-            throw new Error('Space 소유자가 아닙니다.');
-        }
 
         return await this.spaceRepository.delete({ id: spaceId });
     }
@@ -131,6 +114,18 @@ export class SpaceService {
         return await this.spaceRepository.exists({
             where: {
                 id,
+            }
+        });
+    }
+
+    async isSpaceMine(userId: number, spaceId: number) {
+        return await this.spaceRepository.exists({
+            where: {
+                id: spaceId,
+                
+            },
+            relations: {
+                participatingUsers: true,
             }
         });
     }
