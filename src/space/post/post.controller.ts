@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer_token.guard';
 import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { Role } from '../role/decorator/role.decorator';
+import { RoleEnum } from '../role/const/role.const';
 
 @Controller('space/:spaceId/post')
 export class PostController {
@@ -28,6 +29,7 @@ export class PostController {
   }
 
   @Post()
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   postPost(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Body() body: CreatePostDto,
@@ -37,19 +39,21 @@ export class PostController {
   }
 
   @Patch(':postId')
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
     @User() user: UserModel,
     @Body() body: UpdatePostDto,
   ) {
-    return this.postService.updatePost(postId, user.id, body);
+    return this.postService.updatePost(postId, body);
   }
 
   @Delete(':postId')
+  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   deletePost(
     @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
   ) {
-    return this.postService.deletePost(postId, user.id);
+    return this.postService.deletePost(postId);
   }
 }

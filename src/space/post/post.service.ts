@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
@@ -43,16 +43,12 @@ export class PostService {
         return newPost;
     }
 
-    async updatePost(id: number, userId: number, postDto: UpdatePostDto) {
+    async updatePost(id: number, postDto: UpdatePostDto) {
         const post = await this.postRepository.findOne({
             where: {
                 id,
             }
         });
-
-        if (post.writerId != userId) {
-            throw new UnauthorizedException('권한이 없습니다.');
-        }
 
         const updatedPost = this.postRepository.create({
             ...post,
@@ -63,21 +59,11 @@ export class PostService {
         return newPost;
     }
 
-    async deletePost(id: number, userId: number) {
-        const post = await this.postRepository.findOne({
-            where: {
-                id,
-            }
-        });
-
-        if (post.writerId != userId) {
-            throw new UnauthorizedException('권한이 없습니다.');
-        }
-
+    async deletePost(id: number) {
         return await this.postRepository.delete(id);
     }
 
-    async checkSpaceExistsById(id: number) {
+    async checkPostExistsById(id: number) {
         return await this.postRepository.exists({
             where: {
                 id

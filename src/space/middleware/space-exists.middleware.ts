@@ -7,7 +7,6 @@ export class SpaceExistsMiddleware implements NestMiddleware {
     constructor(
         private readonly spaceService: SpaceService,
     ) {}
-    
     async use(req: Request, res: Response, next: NextFunction) {
         const spaceId = req.params.spaceId;
 

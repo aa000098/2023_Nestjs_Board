@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatModel } from './entities/chat.entity';
 import { Repository } from 'typeorm';
@@ -28,9 +28,6 @@ export class ChatService {
             }
         });
 
-        if (!chat) {
-            throw new BadRequestException('해당 댓글은 존재하지 않습니다.');
-        }
         return chat;
     }
 
@@ -43,16 +40,12 @@ export class ChatService {
         return newChat;
     }
 
-    async updateChat(id: number, userId: number, chatDto: UpdateChatDto) {
+    async updateChat(id: number, chatDto: UpdateChatDto) {
         const chatObject = await this.chatRepository.findOne({
             where: {
                 id,
             }
         });
-
-        if (chatObject.writerId!= userId) {
-            throw new UnauthorizedException('권한이 없습니다.');
-        }
 
         const newChat = await this.chatRepository.save({
             ...chatObject,
@@ -61,17 +54,15 @@ export class ChatService {
         return newChat;
     }
 
-    async deleteChat(id: number, userId: number) {
-        const chatObject = await this.chatRepository.findOne({
-            where: {
-                id,
-            }
-        });
-
-        if (chatObject.writerId!= userId) {
-            throw new UnauthorizedException('권한이 없습니다.');
-        }
-
+    async deleteChat(id: number) {
         return await this.chatRepository.delete(id);
+    }
+
+    async checkChatExistsById(id: number) {
+        return await this.chatRepository.exists({
+            where: {
+                id
+            }
+        })
     }
 }

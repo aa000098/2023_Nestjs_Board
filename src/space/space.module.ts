@@ -6,7 +6,7 @@ import { SpaceModel } from './entities/space.entity';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { RoleModule } from './role/role.module';
-import { SpaceExistsMiddleware } from './post/middleware/space-exists.middleware';
+import { SpaceExistsMiddleware } from './middleware/space-exists.middleware';
 import { PostController } from './post/post.controller';
 import { ChatController } from './post/chat/chat.controller';
 import { RoleController } from './role/role.controller';
