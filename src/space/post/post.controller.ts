@@ -4,32 +4,37 @@ import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { Role } from '../role/decorator/role.decorator';
-import { RoleEnum } from '../role/const/role.const';
+import { IsPostMineOrAdmin } from './guard/is-post-mine-or-admin.guard';
 
 @Controller('space/:spaceId/post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  @IsPublic()
   getPosts(
     @Param('spaceId', ParseIntPipe) spaceId: number,
+    @User() user: UserModel
   ) {
-    return this.postService.getAllPosts(spaceId);
+    return this.postService.getAllPosts(spaceId, user.id);
   }
 
   @Get(':postId')
-  @IsPublic()
   getPost(
-    @Param('postId', ParseIntPipe) postId: number
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @User() user: UserModel
   ) {
-    return this.postService.getPostById(postId);
+    return this.postService.getPostById(spaceId, postId, user.id);
+  }
+
+  @Get('mypost')
+  getMyPost(
+    @User() user: UserModel,
+  ) {
+    return this.postService.getMyPost(user.id);
   }
 
   @Post()
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
   postPost(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Body() body: CreatePostDto,
@@ -39,19 +44,17 @@ export class PostController {
   }
 
   @Patch(':postId')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @UseGuards(IsPostMineOrAdmin)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
-    @User() user: UserModel,
     @Body() body: UpdatePostDto,
   ) {
     return this.postService.updatePost(postId, body);
   }
 
   @Delete(':postId')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @UseGuards(IsPostMineOrAdmin)
   deletePost(
-    @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
   ) {
     return this.postService.deletePost(postId);

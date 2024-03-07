@@ -5,8 +5,8 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { Role } from 'src/space/role/decorator/role.decorator';
 import { RoleEnum } from 'src/space/role/const/role.const';
+import { Authority } from 'src/space/role/decorator/authority.decorator';
 
 @Controller('space/:spaceId/post/:postId/chat')
 export class ChatController {
@@ -29,7 +29,7 @@ export class ChatController {
   }
 
   @Post()
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   postChat(
     @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
@@ -39,7 +39,7 @@ export class ChatController {
   }
 
   @Patch(':id')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchChat(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserModel,
@@ -49,7 +49,7 @@ export class ChatController {
   }
 
   @Delete(':id')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   deleteChat(
     @Param('id', ParseIntPipe) id: number,
   ) {
