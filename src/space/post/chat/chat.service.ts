@@ -4,12 +4,14 @@ import { ChatModel } from './entities/chat.entity';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectRepository(ChatModel)
         private readonly chatRepository: Repository<ChatModel>,
+        private readonly userService: UserService,
     ) {}
     
     async getAllChats(postId: number) {
@@ -64,5 +66,14 @@ export class ChatService {
                 id
             }
         })
+    }
+
+    async isChatMine(userId: number, chatId: number) {
+        return await this.chatRepository.exists({
+            where: {
+                id: chatId,
+                writerId: userId,
+            }
+        });
     }
 }

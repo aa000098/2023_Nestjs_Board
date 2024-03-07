@@ -11,9 +11,7 @@ export class SpaceService {
     constructor(
         @InjectRepository(SpaceModel)
         private readonly spaceRepository: Repository<SpaceModel>,
-
         private readonly userService: UserService,
-
         private readonly roleService: RoleService,
     ) { }
 

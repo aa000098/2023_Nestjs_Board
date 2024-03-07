@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,8 +12,8 @@ import { ChatExistsMiddleware } from './middleware/chat-exists.middleware';
     TypeOrmModule.forFeature([
       ChatModel,
     ]),
-    AuthModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [ChatController],
   providers: [ChatService],

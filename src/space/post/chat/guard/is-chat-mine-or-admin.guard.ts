@@ -1,13 +1,13 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { RoleEnum } from "src/space/role/const/role.const";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { PostService } from "../post.service";
+import { ChatService } from "../chat.service";
+import { RoleEnum } from "src/space/role/const/role.const";
 
 @Injectable()
-export class IsPostMineOrAdmin implements CanActivate {
+export class IsChatMineOrAdmin implements CanActivate {
     constructor(
         private readonly userService: UserService,
-        private readonly postService: PostService,
+        private readonly chatService: ChatService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -15,7 +15,7 @@ export class IsPostMineOrAdmin implements CanActivate {
 
         const {user, params} = req;
 
-        const {spaceId, postId} = params;
+        const {spaceId, chatId} = params;
 
         const userRole = await this.userService.getRoleOfUser(spaceId, user.id);
 
@@ -23,6 +23,6 @@ export class IsPostMineOrAdmin implements CanActivate {
             return true;
         }
 
-        return await this.postService.isPostMine(user.id, postId);
+        return await this.chatService.isChatMine(user.id, chatId);
     }
 }

@@ -17,7 +17,7 @@ import { RoleController } from './role/role.controller';
     UserModule,
     AuthModule,
     RoleModule,
-  ],
+  ], 
   exports: [
     SpaceService,
   ],

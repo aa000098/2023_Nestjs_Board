@@ -5,8 +5,8 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { RoleEnum } from 'src/space/role/const/role.const';
-import { Authority } from 'src/space/role/decorator/authority.decorator';
+import { IsChatMineOrAdmin } from './guard/is-chat-mine-or-admin.guard';
+import { CheckChatConstraint } from './guard/check-chat-constraint.guard';
 
 @Controller('space/:spaceId/post/:postId/chat')
 export class ChatController {
@@ -29,7 +29,7 @@ export class ChatController {
   }
 
   @Post()
-  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @UseGuards(CheckChatConstraint)
   postChat(
     @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
@@ -39,17 +39,16 @@ export class ChatController {
   }
 
   @Patch(':id')
-  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @UseGuards(IsChatMineOrAdmin)
   patchChat(
     @Param('id', ParseIntPipe) id: number,
-    @User() user: UserModel,
     @Body() body: UpdateChatDto,
   ) {
     return this.chatService.updateChat(id, body);
   }
 
   @Delete(':id')
-  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @UseGuards(IsChatMineOrAdmin)
   deleteChat(
     @Param('id', ParseIntPipe) id: number,
   ) {

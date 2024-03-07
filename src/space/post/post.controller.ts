@@ -5,6 +5,7 @@ import { UserModel } from 'src/user/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { IsPostMineOrAdmin } from './guard/is-post-mine-or-admin.guard';
+import { CheckPostConstraint } from './guard/check-post-constraint.guard';
 
 @Controller('space/:spaceId/post')
 export class PostController {
@@ -27,14 +28,8 @@ export class PostController {
     return this.postService.getPostById(spaceId, postId, user.id);
   }
 
-  @Get('mypost')
-  getMyPost(
-    @User() user: UserModel,
-  ) {
-    return this.postService.getMyPost(user.id);
-  }
-
   @Post()
+  @UseGuards(CheckPostConstraint)
   postPost(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Body() body: CreatePostDto,

@@ -5,9 +5,8 @@ import { PostModel } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStateEnum } from './const/post-state.const';
-import { UserService } from 'src/user/user.service';
-import { PostTypeEnum } from './const/post-type.const';
 import { RoleEnum } from '../role/const/role.const';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class PostService {
@@ -114,23 +113,11 @@ export class PostService {
     }
 
     async createPost(spaceId: number, userId: number, postDto: CreatePostDto) {
-        const role = await this.userService.getRoleOfUser(spaceId, userId);
-
-        if (postDto.postType==PostTypeEnum.N && role.authority==RoleEnum.USER) {
-            throw new UnauthorizedException('관리자 권한이 없습니다.');
-        }
-
-        if (postDto.isAnonymous==true && role.authority!=RoleEnum.USER) {
-            throw new BadRequestException('관리자는 익명으로 글을 쓸 수 없습니다.');
-        }
-
-        const postObject = await this.postRepository.create({
+        const newPost = await this.postRepository.save({
             spaceId,
             writerId: userId,
             ...postDto
         });
-
-        const newPost = await this.postRepository.save(postObject);
         return newPost;
     }
 
