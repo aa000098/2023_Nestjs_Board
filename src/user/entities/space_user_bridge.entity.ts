@@ -26,7 +26,7 @@ export class SpaceUserBridgeModel {
     @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     participatingUsers: UserModel;
 
-    @ManyToOne(()=> RoleModel, {eager: true} )
+    @ManyToOne(()=> RoleModel, (role)=> role.bridges)
     @JoinColumn({name: 'roleId', referencedColumnName: 'id'})
     role: RoleModel;
 } 

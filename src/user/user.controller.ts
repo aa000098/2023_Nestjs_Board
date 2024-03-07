@@ -1,22 +1,21 @@
-import { ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer_token.guard';
 import { UserModel } from './entities/user.entity';
 import { User } from './decorator/user.decorator';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseInterceptors(ClassSerializerInterceptor)
+  @IsPublic()
   getUsers() {
     return this.userService.getAllUsers();
   }
 
   @Get(':userId')
-  @UseGuards(AccessTokenGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @IsPublic()
   getUser(
     @User() user: UserModel,
     @Param('userId', ParseIntPipe) userId: number,
@@ -25,7 +24,6 @@ export class UserController {
   }
 
   @Delete()
-  @UseGuards(AccessTokenGuard)
   deleteUser(
     @Req() req: any, 
   ) {

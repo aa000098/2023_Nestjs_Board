@@ -21,7 +21,7 @@ export class UserService {
     async getAllUsers() {
         const users = this.userRepository.find({
             select: ['id', 'createdAt', 'updatedAt', 'gender', 'userName', 'profileImage'],
-            relations: ['participatingSpaces', 'owningSpaces']
+            relations: ['participatingSpaces']
         });
         return users;
     }
@@ -33,7 +33,7 @@ export class UserService {
             where: {
                 id: userId,
             },
-            relations: isMyProfile ? ['chats', 'posts', 'owningSpaces','participatingSpaces'] : ['owningSpaces','participatingSpaces']
+            relations: isMyProfile ? ['chats', 'posts', 'participatingSpaces'] : ['participatingSpaces']
         })
         return user;
     }
@@ -136,7 +136,8 @@ export class UserService {
                 where: {
                     spaceId,
                     userId
-                }
+                },
+                relations: ['role']
             });
             if (!bridge) {
                 throw new BadRequestException('Space에 없는 유저입니다.')
@@ -163,10 +164,6 @@ export class UserService {
 
             if (!bridge) {
                 throw new BadRequestException('Space에 없는 유저입니다.')
-            }
-
-            if (bridge.role.isOwner) {
-                throw new BadRequestException('소유자의 권한은 변경할 수 없습니다.');
             }
 
             const chagnedBridge = await this.bridgeRepository.save({ spaceId, userId, role });

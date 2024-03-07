@@ -33,9 +33,6 @@ export class UserModel extends BaseModel {
     @Column({type: 'enum', enum: GendersEnum })
     gender: GendersEnum;
 
-    @OneToMany(() => SpaceModel, (space)=> space.owner)
-    owningSpaces: SpaceModel[];
-
     @OneToMany(()=> SpaceUserBridgeModel, (bridge)=> bridge.participatingUsers)
     participatingSpaces: SpaceUserBridgeModel[];
 
