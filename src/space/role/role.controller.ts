@@ -1,19 +1,16 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { UserModel } from 'src/user/entities/user.entity';
-import { User } from 'src/user/decorator/user.decorator';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Role } from './decorator/role.decorator';
 import { RoleEnum } from './const/role.const';
-import { RoleModel } from './entities/role.entity';
+import { Authority } from './decorator/authority.decorator';
 
 @Controller('space/:spaceId/role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   getRoles(
     @Param('spaceId', ParseIntPipe) spaceId: number,
   ) {
@@ -21,7 +18,7 @@ export class RoleController {
   }
 
   @Post()
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   createRole(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Body() body: CreateRoleDto,
@@ -30,7 +27,7 @@ export class RoleController {
   }
 
   @Patch(':roleId')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchRole(
     @Param('roleId', ParseIntPipe) roleId: number,
     @Body() body: UpdateRoleDto,
@@ -39,7 +36,7 @@ export class RoleController {
   }
 
   @Patch(':roleId/:userId')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   patchUserRole(
     @Param('roleId', ParseIntPipe) roleId: number,
     @Param('spaceId', ParseIntPipe) spaceId: number,
@@ -50,7 +47,7 @@ export class RoleController {
   }
 
   @Delete(':roleId')
-  @Role(RoleEnum.OWNER, RoleEnum.ADMIN)
+  @Authority(RoleEnum.OWNER, RoleEnum.ADMIN)
   deleteRole(
     @Param('roleId', ParseIntPipe) roleId: number,
   ) {

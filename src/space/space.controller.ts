@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UserModel } from 'src/user/entities/user.entity';
 import { User } from 'src/user/decorator/user.decorator';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { RoleEnum } from './role/const/role.const';
-import { Role } from './role/decorator/role.decorator';
+import { Authority } from './role/decorator/authority.decorator';
 
 @Controller('space')
 export class SpaceController {
@@ -43,7 +43,7 @@ export class SpaceController {
   }
 
   @Delete(':spaceId')
-  @Role(RoleEnum.OWNER)
+  @Authority(RoleEnum.OWNER)
   deleteSpace(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @User() user: UserModel
