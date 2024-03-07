@@ -20,10 +20,4 @@ import { RoleController } from '../role/role.controller';
   controllers: [PostController],
   providers: [PostService],
 })
-export class PostModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-    .apply(SpaceExistsMiddleware)
-    .forRoutes(PostController, ChatController, RoleController);
-  }
-}
+export class PostModule {}

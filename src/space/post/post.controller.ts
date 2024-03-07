@@ -5,12 +5,14 @@ import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('space/:spaceId/post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
+  @IsPublic()
   getPosts(
     @Param('spaceId', ParseIntPipe) spaceId: number,
   ) {
@@ -18,6 +20,7 @@ export class PostController {
   }
 
   @Get(':postId')
+  @IsPublic()
   getPost(
     @Param('postId', ParseIntPipe) postId: number
   ) {
@@ -25,7 +28,6 @@ export class PostController {
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   postPost(
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @Body() body: CreatePostDto,
@@ -35,7 +37,6 @@ export class PostController {
   }
 
   @Patch(':postId')
-  @UseGuards(AccessTokenGuard)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
     @User() user: UserModel,
@@ -45,7 +46,6 @@ export class PostController {
   }
 
   @Delete(':postId')
-  @UseGuards(AccessTokenGuard)
   deletePost(
     @User() user: UserModel,
     @Param('postId', ParseIntPipe) postId: number,
