@@ -1,7 +1,6 @@
 import { BaseModel } from "src/common/entities/base.entity";
 import { Column, Entity, OneToMany } from "typeorm";
 import { SpaceUserBridgeModel } from "./space_user_bridge.entity";
-import { SpaceModel } from "src/space/entities/space.entity";
 import { GendersEnum } from "../const/gender.const";
 import { IsEmail, IsString, Length } from "class-validator";
 import { Exclude } from "class-transformer";
