@@ -48,6 +48,6 @@ export class SpaceController {
     @Param('spaceId', ParseIntPipe) spaceId: number,
     @User() user: UserModel
   ) {
-    return this.spaceService.deleteSpace(spaceId, user.id);
+    return this.spaceService.deleteSpace(spaceId);
   }
 }

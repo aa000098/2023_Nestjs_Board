@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { RoleService } from './role/role.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
+import { RoleEnum } from './role/const/role.const';
 
 @Injectable()
 export class SpaceService {
@@ -81,12 +82,11 @@ export class SpaceService {
     }
 
     async deleteUserFromSpace(spaceId, userId) {
-        const space = await this.spaceRepository.findOne({
-            where: {
-                id: spaceId
-            },
-            relations: ['participatingUsers']
-        });
+        const role = await this.userService.getRoleOfUser(spaceId, userId);
+
+        if (role.authority == RoleEnum.OWNER) {
+            throw new BadRequestException('소유자는 탈퇴할 수 없습니다.');
+        }
 
         const deleteResult = await this.userService.deleteBridge(spaceId, userId);
 
@@ -97,14 +97,7 @@ export class SpaceService {
         return deleteResult;
     }
 
-    async deleteSpace(spaceId:number, userId:number) {
-        const space = await this.spaceRepository.findOne({
-            where: {
-                id: spaceId
-            },
-            relations: ['participatingUsers']
-        });
-
+    async deleteSpace(spaceId:number) {
         return await this.spaceRepository.delete({ id: spaceId });
     }
 
@@ -112,18 +105,6 @@ export class SpaceService {
         return await this.spaceRepository.exists({
             where: {
                 id,
-            }
-        });
-    }
-
-    async isSpaceMine(userId: number, spaceId: number) {
-        return await this.spaceRepository.exists({
-            where: {
-                id: spaceId,
-                
-            },
-            relations: {
-                participatingUsers: true,
             }
         });
     }
