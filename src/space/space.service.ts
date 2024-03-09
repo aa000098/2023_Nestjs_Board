@@ -6,6 +6,9 @@ import { UserService } from 'src/user/user.service';
 import { RoleService } from './role/role.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { RoleEnum } from './role/const/role.const';
+import { LOGO_FOLDER_PATH, TEMP_FOLDER_PATH } from 'src/common/const/path.const';
+import { basename, join } from 'path';
+import {promises} from 'fs';
 
 @Injectable()
 export class SpaceService {
@@ -23,8 +26,26 @@ export class SpaceService {
         return spaces
     }
 
+    async createSpaceLogo(spaceDto: CreateSpaceDto) {
+        const tempFilePath = join(TEMP_FOLDER_PATH,spaceDto.spaceLogo);
+
+        try {
+            await promises.access(tempFilePath);
+        } catch (e) {
+            throw new BadRequestException('존재하지 않는 파일 입니다.');
+        }
+
+        const fileName = basename(tempFilePath);
+        const newPath = join(LOGO_FOLDER_PATH, fileName);
+
+        await promises.rename(tempFilePath, newPath);
+
+        return true; 
+    }
+
     async createSpace(ownerId: number, spaceDto: CreateSpaceDto) {
         const { spaceName, spaceLogo, roles } = spaceDto;
+
         const newSpace = await this.spaceRepository.save({
             ownerId,
             spaceName,
@@ -35,6 +56,11 @@ export class SpaceService {
 
         const ownerRole = await this.roleService.createDefaultRole(spaceId);
         await this.addUserToSpace(spaceId, ownerId, ownerRole.entryCode);
+
+        if (typeof roles ==='undefined') {
+            throw new BadRequestException('역할 세트를 지정해주세요.');
+        }
+
         for (const roleDto of roles) {
             await this.roleService.createNewRole(spaceId, roleDto);
         };
@@ -45,6 +71,8 @@ export class SpaceService {
             },
             relations: ['roles', 'participatingUsers']
         });
+
+        this.createSpaceLogo(spaceDto);
 
         return space;
     }

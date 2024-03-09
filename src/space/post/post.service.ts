@@ -7,6 +7,9 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStateEnum } from './const/post-state.const';
 import { RoleEnum } from '../role/const/role.const';
 import { UserService } from 'src/user/user.service';
+import { POST_FOLDER_PATH, TEMP_FOLDER_PATH } from 'src/common/const/path.const';
+import { basename, join } from 'path';
+import {promises} from 'fs';
 
 @Injectable()
 export class PostService {
@@ -77,12 +80,35 @@ export class PostService {
         return posts;
     }
 
+    async createPostFile(file: string) {
+        const tempFilePath = join(TEMP_FOLDER_PATH, file);
+
+        try {
+            await promises.access(tempFilePath);
+        } catch (e) {
+            throw new BadRequestException('존재하지 않는 파일 입니다.');
+        }
+
+        const fileName = basename(tempFilePath);
+        const newPath = join(POST_FOLDER_PATH, fileName);
+
+        await promises.rename(tempFilePath, newPath);
+
+        return true; 
+    }
+
     async createPost(spaceId: number, userId: number, postDto: CreatePostDto) {
         const newPost = await this.postRepository.save({
             spaceId,
             writerId: userId,
             ...postDto
         });
+        if (postDto.file) {
+            this.createPostFile(postDto.file);
+        }
+        if (postDto.image) {
+            this.createPostFile(postDto.image);
+        }
         return newPost;
     }
 

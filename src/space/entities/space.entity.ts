@@ -4,6 +4,9 @@ import { SpaceUserBridgeModel } from "src/user/entities/space_user_bridge.entity
 import { Column, Entity, OneToMany } from "typeorm";
 import { PostModel } from "src/space/post/entities/post.entity";
 import { RoleModel } from "../role/entities/role.entity";
+import { Transform } from "class-transformer";
+import { join } from "path";
+import { LOGO_FOLDER_NAME, PUBLIC_FOLDER_NAME } from "src/common/const/path.const";
 
 @Entity({ name: 'space' })
 export class SpaceModel extends BaseModel {
@@ -14,7 +17,8 @@ export class SpaceModel extends BaseModel {
     @Column({
         nullable: true,
     })
-    spaceLogo: Buffer;
+    @Transform(({value})=> value && `/${join(PUBLIC_FOLDER_NAME,LOGO_FOLDER_NAME,value)}`)
+    spaceLogo: string;
 
     @OneToMany(()=> SpaceUserBridgeModel, (bridge)=> bridge.participatingSpaces)
     participatingUsers: SpaceUserBridgeModel[];

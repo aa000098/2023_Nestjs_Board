@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { BadRequestException, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { SpaceController } from './space.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';

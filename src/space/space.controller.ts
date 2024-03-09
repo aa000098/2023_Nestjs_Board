@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UserModel } from 'src/user/entities/user.entity';
@@ -6,6 +6,7 @@ import { User } from 'src/user/decorator/user.decorator';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { RoleEnum } from './role/const/role.const';
 import { Authority } from './role/decorator/authority.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('space')
 export class SpaceController {
@@ -46,7 +47,6 @@ export class SpaceController {
   @Authority(RoleEnum.OWNER)
   deleteSpace(
     @Param('spaceId', ParseIntPipe) spaceId: number,
-    @User() user: UserModel
   ) {
     return this.spaceService.deleteSpace(spaceId);
   }

@@ -6,6 +6,9 @@ import { PostTypeEnum } from "../const/post-type.const";
 import { IsBoolean, IsString } from "class-validator";
 import { PostStateEnum } from "../const/post-state.const";
 import { ChatModel } from "src/space/post/chat/entities/chat.entity";
+import { Transform } from "class-transformer";
+import { POST_FOLDER_NAME, PUBLIC_FOLDER_NAME } from "src/common/const/path.const";
+import { join } from "path";
 
 @Entity({name: 'post'})
 export class PostModel extends BaseModel {
@@ -35,12 +38,14 @@ export class PostModel extends BaseModel {
     @Column({
         nullable: true
     })
-    image: Buffer;
+    @Transform(({value}) => value && `/${join(PUBLIC_FOLDER_NAME, POST_FOLDER_NAME, value)}`)
+    image: string;
 
     @Column({
         nullable: true
     })
-    file: Buffer;
+    @Transform(({value}) => value && `/${join(PUBLIC_FOLDER_NAME, POST_FOLDER_NAME, value)}`)
+    file: string;
 
     @Column()
     @IsBoolean()

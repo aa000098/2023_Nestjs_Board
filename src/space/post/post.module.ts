@@ -24,12 +24,9 @@ export class PostModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
     .apply(PostExistsMiddleware)
-    .exclude(
-      { path: 'space/:spaceId/post/mypost', method: RequestMethod.GET}
-    )
     .forRoutes(
       ChatController,
-      {path: 'space/:spaceId/post/:postId', method: RequestMethod.ALL}
+      {path: 'space/:spaceId/post/:postId*', method: RequestMethod.ALL}
     )
   }
 }

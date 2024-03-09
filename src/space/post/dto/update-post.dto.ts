@@ -11,10 +11,10 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
     content?: string;
 
     @IsOptional()
-    image?: Buffer;
+    image?: string;
 
     @IsOptional()
-    file?: Buffer;
+    file?: string;
 
     @IsOptional()
     isAnonymous?: Boolean;
