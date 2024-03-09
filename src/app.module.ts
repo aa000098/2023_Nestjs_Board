@@ -20,6 +20,9 @@ import { RoleModel } from './space/role/entities/role.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { RoleGuard } from './space/role/guard/role.guard';
 import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -47,7 +50,6 @@ import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
         ChatModel,
       ],
       synchronize: true,
-
     }),
     SpaceModule,
     UserModule,
@@ -55,6 +57,11 @@ import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
     ChatModule,
     AuthModule,
     RoleModule,
+    ServeStaticModule.forRoot({
+      rootPath: PUBLIC_FOLDER_PATH,
+      serveRoot: '/public'
+    }),
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [
