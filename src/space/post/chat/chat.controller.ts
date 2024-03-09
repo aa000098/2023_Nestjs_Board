@@ -4,7 +4,6 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/user/decorator/user.decorator';
 import { UserModel } from 'src/user/entities/user.entity';
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { IsChatMineOrAdmin } from './guard/is-chat-mine-or-admin.guard';
 import { CheckChatConstraint } from './guard/check-chat-constraint.guard';
 
@@ -13,19 +12,28 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) { }
 
   @Get()
-  @IsPublic()
   getChats(
+    @Param('spaceId', ParseIntPipe) spaceId: number,
     @Param('postId', ParseIntPipe) postId: number,
+    @User() user: UserModel,
   ) {
-    return this.chatService.getAllChats(postId);
+    return this.chatService.getAllChats(spaceId, postId, user.id);
   }
 
-  @Get(':id')
-  @IsPublic()
-  getChat(
-    @Param('id', ParseIntPipe) id: number,
+  @Get('myChat')
+  getMyChat(
+    @User() user: UserModel,
   ) {
-    return this.chatService.getChatById(id);
+    return this.chatService.getMyChat(user.id);  
+  }
+
+  @Get(':chatId')
+  getChat(
+    @Param('spaceId', ParseIntPipe) spaceId: number,
+    @Param('chatId', ParseIntPipe) chatId: number,
+    @User() user: UserModel,
+  ) {
+    return this.chatService.getChatById(spaceId, chatId, user.id);
   }
 
   @Post()
@@ -38,20 +46,20 @@ export class ChatController {
     return this.chatService.createChat(postId, user.id, body);
   }
 
-  @Patch(':id')
+  @Patch(':chatId')
   @UseGuards(IsChatMineOrAdmin)
   patchChat(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('chatId', ParseIntPipe) chatId: number,
     @Body() body: UpdateChatDto,
   ) {
-    return this.chatService.updateChat(id, body);
+    return this.chatService.updateChat(chatId, body);
   }
 
-  @Delete(':id')
+  @Delete(':chatId')
   @UseGuards(IsChatMineOrAdmin)
   deleteChat(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('chatId', ParseIntPipe) chatId: number,
   ) {
-    return this.chatService.deleteChat(id);
+    return this.chatService.deleteChat(chatId);
   }
 }

@@ -2,7 +2,7 @@ import { IsBoolean, IsNumber, IsString } from "class-validator";
 import { BaseModel } from "src/common/entities/base.entity";
 import { PostModel } from "src/space/post/entities/post.entity";
 import { UserModel } from "src/user/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({name: 'chat'})
 export class ChatModel extends BaseModel {
@@ -10,7 +10,7 @@ export class ChatModel extends BaseModel {
     postId: number;
 
     @Column()
-    writerId: number;
+    writerId: number | null;
 
     @Column()
     @IsString()
@@ -19,7 +19,7 @@ export class ChatModel extends BaseModel {
     @Column({
         nullable: true
     })
-    chatGroup: number | null;
+    parentId: number | null;
 
     @Column()
     @IsBoolean()
@@ -35,5 +35,26 @@ export class ChatModel extends BaseModel {
 
     @ManyToOne(()=> UserModel, (user)=> user.chats, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'writerId', referencedColumnName: 'id'})
-    writer: UserModel;
+    writer: UserModel | null;
+
+    @ManyToOne(()=> ChatModel, (chat)=> chat.children, {onDelete: 'CASCADE', nullable: true})
+    @JoinColumn({name: 'parentId', referencedColumnName: 'id'})
+    parent: ChatModel | null;
+
+    @OneToMany(()=> ChatModel, (chat)=> chat.parent)
+    children: ChatModel[];
+
+    get _writerId(): number | null {
+        return this.isAnonymous ? null : this.writerId;
+    }
+
+    get _writer(): UserModel | null {
+        return this.isAnonymous ? 
+        null : 
+        {
+            ...this.writer,
+            email: null,
+            password: null
+        };
+    }
 }
