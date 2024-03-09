@@ -30,32 +30,13 @@ export class PostService {
         });
 
         const filteredPosts = posts.map(post => {
-            if (post.isAnonymous && role.authority==RoleEnum.USER) {
-                return {
-                    id: post.id,
-                    createdAt: post.createdAt,
-                    updatedAt: post.updatedAt,
-                    spaceId: post.spaceId,
-                    postType: post.postType,
-                    postTitle: post.postTitle,
-                    postState: post.postState,
-                    content: post.content,
-                    image: post.image,
-                    file: post.file,
-                    isAnonymous: post.isAnonymous,
-                    curiosity: post.curiosity,
-                }
-            } else {
+            if (role.authority==RoleEnum.USER) {
                 return {
                     ...post,
-                    writer: {
-                        id: post.writer.id,
-                        userName: post.writer.userName,
-                        profileImage: post.writer.profileImage,
-                        gender: post.writer.gender,
-                    }
-                };
-            }
+                    writerId: post._writerId,
+                    writer: post._writer
+                }
+            } 
         });
 
         return filteredPosts;
@@ -74,32 +55,13 @@ export class PostService {
             }
         });
 
-        if (post.isAnonymous && role.authority==RoleEnum.USER) {
-            return {
-                id: post.id,
-                createdAt: post.createdAt,
-                updatedAt: post.updatedAt,
-                spaceId: post.spaceId,
-                postType: post.postType,
-                postTitle: post.postTitle,
-                postState: post.postState,
-                content: post.content,
-                image: post.image,
-                file: post.file,
-                isAnonymous: post.isAnonymous,
-                curiosity: post.curiosity,
-            }
-        } else {
+        if (role.authority==RoleEnum.USER) {
             return {
                 ...post,
-                writer: {
-                    id: post.writer.id,
-                    userName: post.writer.userName,
-                    profileImage: post.writer.profileImage,
-                    gender: post.writer.gender,
-                }
-            };
-        }
+                writerId: post._writerId,
+                writer: post._writer
+            }
+        } 
     }
 
     async getMyPost(userId: number) {

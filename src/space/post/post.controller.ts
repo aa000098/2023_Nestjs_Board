@@ -19,6 +19,13 @@ export class PostController {
     return this.postService.getAllPosts(spaceId, user.id);
   }
 
+  @Get('myPost')
+  getMyPost(
+    @User() user: UserModel
+  ) {
+    return this.postService.getMyPost(user.id);
+  }
+
   @Get(':postId')
   getPost(
     @Param('spaceId', ParseIntPipe) spaceId: number,

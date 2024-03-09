@@ -13,7 +13,7 @@ export class PostModel extends BaseModel {
     spaceId: number;
 
     @Column()
-    writerId: number;
+    writerId: number | null;
 
     @Column({
         type: 'enum', enum: PostTypeEnum
@@ -55,8 +55,20 @@ export class PostModel extends BaseModel {
 
     @ManyToOne(()=> UserModel, (user)=> user.posts, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'writerId', referencedColumnName: 'id'})
-    writer: UserModel;
+    writer: UserModel | null;
 
     @OneToMany(()=>ChatModel, (chat)=>chat.post)
     chats: ChatModel[];
+
+    get _writerId(): number | null {
+        return this.isAnonymous ? null : this.writerId;
+    }
+
+    get _writer(): UserModel | null {
+        return this.isAnonymous ? null : {
+            ...this.writer,
+            email: null,
+            password: null
+        }
+    }
 }
