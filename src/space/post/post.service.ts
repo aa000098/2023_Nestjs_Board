@@ -20,7 +20,6 @@ export class PostService {
         const role = await this.userService.getRoleOfUser(spaceId, userId);
 
         const posts = await this.postRepository.find({
-            select: [],
             where: {
                 spaceId
             },
@@ -36,7 +35,9 @@ export class PostService {
                     writerId: post._writerId,
                     writer: post._writer
                 }
-            } 
+            } else {
+                return post
+            }
         });
 
         return filteredPosts;
@@ -61,6 +62,8 @@ export class PostService {
                 writerId: post._writerId,
                 writer: post._writer
             }
+        } else {
+            return post
         } 
     }
 

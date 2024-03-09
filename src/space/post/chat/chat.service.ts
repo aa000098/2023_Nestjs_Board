@@ -46,6 +46,8 @@ export class ChatService {
                         }
                     })
                 }
+            } else {
+                return chat
             }
         });
 
