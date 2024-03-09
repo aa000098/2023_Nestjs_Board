@@ -20,13 +20,6 @@ export class ChatController {
     return this.chatService.getAllChats(spaceId, postId, user.id);
   }
 
-  @Get('myChat')
-  getMyChat(
-    @User() user: UserModel,
-  ) {
-    return this.chatService.getMyChat(user.id);  
-  }
-
   @Get(':chatId')
   getChat(
     @Param('spaceId', ParseIntPipe) spaceId: number,

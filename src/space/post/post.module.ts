@@ -16,6 +16,7 @@ import { PostExistsMiddleware } from './middleware/post-exists.middleware';
     UserModule,
     SpaceModule,
   ],
+  exports: [PostService],
   controllers: [PostController],
   providers: [PostService],
 })

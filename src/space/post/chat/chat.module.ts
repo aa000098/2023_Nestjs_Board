@@ -15,6 +15,7 @@ import { ChatExistsMiddleware } from './middleware/chat-exists.middleware';
     UserModule,
     AuthModule,
   ],
+  exports: [ChatService],
   controllers: [ChatController],
   providers: [ChatService],
 })
