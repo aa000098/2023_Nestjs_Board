@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://www.classum.com/images/Logo-type.png" width="300" alt="Classum Logo" /></a>
-</p>
-
 ## NestJS 스페이스 기반 커뮤니티
 NestJS를 기반으로 프로젝트를 진행하는 손현호입니다.<br>설치 및 실행 방법에 대해 설명드리겠습니다.
 
