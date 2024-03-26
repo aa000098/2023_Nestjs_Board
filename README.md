@@ -2,8 +2,8 @@
   <img src="https://www.classum.com/images/Logo-type.png" width="300" alt="Classum Logo" /></a>
 </p>
 
-## 클라썸 개발 인턴 과제
-클라썸 백엔드 개발 인턴 과제를 진행하는 손현호입니다.<br>과제 설치 및 실행 방법에 대해 설명드리겠습니다.
+## NestJS 스페이스 기반 커뮤니티
+NestJS를 기반으로 프로젝트를 진행하는 손현호입니다.<br>설치 및 실행 방법에 대해 설명드리겠습니다.
 
 <p align="center">
 <img src="https://img.shields.io/badge/npm-v10.2.4-grey?logo=npm&logoColor=white&style=flat&labelColor=darkred">
